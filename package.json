@@ -26,6 +26,7 @@
   "homepage": "https://github.com/1dv527/on222bx-examination-2#readme",
   "dependencies": {
     "koa": "^2.0.0-alpha.7",
+    "koa-json": "^2.0.2",
     "koa-router": "^7.0.1",
     "mongoose": "^4.8.1"
   },
