@@ -4,7 +4,8 @@
   "description": "A REST API that should be used for blogging purposes.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js --exec babel-node --presets es2015,stage-2"
   },
   "repository": {
     "type": "git",
@@ -22,5 +23,13 @@
   "bugs": {
     "url": "https://github.com/1dv527/on222bx-examination-2/issues"
   },
-  "homepage": "https://github.com/1dv527/on222bx-examination-2#readme"
+  "homepage": "https://github.com/1dv527/on222bx-examination-2#readme",
+  "dependencies": {
+    "koa": "^2.0.0-alpha.7"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.22.2",
+    "babel-preset-es2015": "^6.22.0",
+    "babel-preset-stage-2": "^6.22.0"
+  }
 }
