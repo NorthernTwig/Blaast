@@ -2,14 +2,17 @@ import Koa from 'koa'
 import Router from 'koa-router'
 import json from 'koa-json'
 import db from './utils/mongo'
-import main from './routes/main'
+import user from './routes/user'
+import error from './routes/error'
 const app = new Koa()
 const router = new Router()
 const PORT = 3000
 
 app.use(json())
 
-router.use('/', main.routes())
+router.use(user.routes())
+router.use(error.routes())
+
 app.use(router.routes())
 app.use(router.allowedMethods())
 

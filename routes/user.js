@@ -2,17 +2,14 @@ import Router from 'koa-router'
 const router = new Router()
 
 router
-  .get('/', async (ctx, next) => {
-    ctx.status = 200
-
+  .get('user/:id', async (ctx, next) => {
     ctx.body = {
-      id: 0,
+      id: ctx.params.id,
       username: "Northerntwig",
       name: "Oscar Nordquist",
-      posts: "http://localhost:3000/posts"
+      posts: "http://localhost:3000/posts",
+      comments: "http://localhost:3000/comments"
     }
-
-    console.log(ctx)
   })
 
 export default router
