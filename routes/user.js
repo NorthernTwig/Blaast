@@ -1,4 +1,5 @@
 import Router from 'koa-router'
+import mongoose from 'mongoose'
 const router = new Router()
 
 router
@@ -10,6 +11,9 @@ router
       posts: "http://localhost:3000/posts",
       comments: "http://localhost:3000/comments"
     }
+  })
+  .post('user/create/:username/:password', async (ctx, next) => {
+
   })
 
 export default router
