@@ -32,7 +32,7 @@ router
     const { title, body, author } = ctx.request.body
 
     try {
-      const rapoo = await PostSchema.create({
+      await PostSchema.create({
         title,
         body,
         author  
@@ -40,6 +40,16 @@ router
       ctx.body = `The post ${title} has been created`
     } catch(e) {
       ctx.body = 'An error occured'
+    }
+  })
+  .delete('post/delete', async (ctx, next) => {
+    const {_id} = ctx.request.body
+
+    try {
+      await PostSchema.find({_id}).remove()
+      ctx.body = 'Post was successfully deleted.'
+    } catch(e) {
+      ctx.body = 'Post could not be deleted.'
     }
   })
   
