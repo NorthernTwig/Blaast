@@ -3,6 +3,15 @@ import PostSchema from '../models/schemas/PostSchema'
 const router = new Router()
 
 router
+  .get('post', async (ctx, next) => {
+    try {
+      const posts = await PostSchema.find({}).sort({'date': -1}).limit(20)
+      ctx.body = posts
+    } catch(e) {
+      ctx.body = 'Could not display any posts'
+    }
+
+  })
   .get('post/:id', async (ctx, next) => {
     ctx.body = {
       id: ctx.params.id,
