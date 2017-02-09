@@ -3,7 +3,7 @@ import PostSchema from '../models/schemas/PostSchema'
 const router = new Router()
 
 router
-  .get('post', async (ctx, next) => {
+  .get('posts', async (ctx, next) => {
     try {
       ctx.body = await PostSchema.find({}).sort({'date': -1}).limit(20)
     } catch(e) {
@@ -14,7 +14,7 @@ router
     const { _id } = ctx.params
     
     try {
-      ctx.body = await PostSchema.find({_id})
+      ctx.body = await PostSchema.findOne({_id})
     } catch(e) {
       ctx.body = `Could not find a post with the id: ${_id}`
     }
@@ -35,21 +35,34 @@ router
       await PostSchema.create({
         title,
         body,
-        author  
+        author
       })
-      ctx.body = `The post ${title} has been created`
+      ctx.body = `The post "${title}" has been created`
     } catch(e) {
       ctx.body = 'An error occured'
     }
   })
   .delete('post/delete', async (ctx, next) => {
-    const {_id} = ctx.request.body
+    const { _id } = ctx.request.body
 
     try {
-      await PostSchema.find({_id}).remove()
+      await PostSchema.findOneAndRemove({_id})
       ctx.body = 'Post was successfully deleted.'
     } catch(e) {
       ctx.body = 'Post could not be deleted.'
+    }
+  })
+  .put('post/update', async (ctx, next) => {
+    const { _id } = ctx.request.body
+
+    try {
+      const post = await PostSchema.findOne({_id})
+      const sanitizedPost = post.toObject()
+      const updatedPost = Object.assign({}, sanitizedPost, ctx.request.body)
+      await PostSchema.findOneAndUpdate({_id}, updatedPost)
+      ctx.body = 'Post was successfully updated'
+    } catch(e) {
+      ctx.body = 'Could not update post'
     }
   })
   
