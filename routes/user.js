@@ -12,7 +12,7 @@ router
       comments: "http://localhost:3000/comments"
     }
   })
-  .post('user/create/:username/:password', async (ctx, next) => {
+  .post('user/create', async (ctx, next) => {
     
   })
 

@@ -1,4 +1,5 @@
 import Router from 'koa-router'
+import PostSchema from '../models/schemas/PostSchema'
 const router = new Router()
 
 router
@@ -35,5 +36,21 @@ router
       },
     ]
   })
+  .post('post/create', async (ctx, next) => {
+    const { title, body, author } = ctx.request.body
+
+    try {
+      const rapoo = await PostSchema.create({
+        title,
+        body,
+        author  
+      })
+      ctx.body = 'Success'
+    } catch(e) {
+      ctx.body = 'An error occured'
+    }
+
+  })
+  
 
 export default router
