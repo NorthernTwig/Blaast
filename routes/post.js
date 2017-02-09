@@ -5,45 +5,28 @@ const router = new Router()
 router
   .get('post', async (ctx, next) => {
     try {
-      const posts = await PostSchema.find({}).sort({'date': -1}).limit(20)
-      ctx.body = posts
+      ctx.body = await PostSchema.find({}).sort({'date': -1}).limit(20)
     } catch(e) {
       ctx.body = 'Could not display any posts'
     }
-
   })
-  .get('post/:id', async (ctx, next) => {
-    ctx.body = {
-      id: ctx.params.id,
-      title: "How to write a REST API",
-      author: "Northerntwig",
-      author_profile: "http://localhost:3000/user/Northerntwig",
-      body: "Lorem Ipsum",
-      number_of_comments: 27,
-      comments: "http://localhost:3000/comments"
+  .get('post/:_id', async (ctx, next) => {
+    const { _id } = ctx.params
+    
+    try {
+      ctx.body = await PostSchema.find({_id})
+    } catch(e) {
+      ctx.body = `Could not find a post with the id: ${_id}`
     }
   })
-  .get('post/user/:username', async (ctx, next) => {
-    ctx.body = [
-      {
-        id: 0,
-        title: "How to write a REST API",
-        author: ctx.params.username,
-        author_profile: "http://localhost:3000/user/Northerntwig",
-        body: "Lorem Ipsum",
-        number_of_comments: 27,
-        comments: "http://localhost:3000/comments"
-      },
-      {
-        id: 0,
-        title: "How to write a REST API",
-        author: ctx.params.username,
-        author_profile: "http://localhost:3000/user/Northerntwig",
-        body: "Lorem Ipsum",
-        number_of_comments: 27,
-        comments: "http://localhost:3000/comments"
-      },
-    ]
+  .get('post/user/:author', async (ctx, next) => {
+    const { author } = ctx.params
+
+    try {
+      ctx.body = await PostSchema.find({author})
+    } catch(e) {
+      ctx.body = `The user ${author} has not created any posts.`
+    }
   })
   .post('post/create', async (ctx, next) => {
     const { title, body, author } = ctx.request.body
@@ -54,11 +37,10 @@ router
         body,
         author  
       })
-      ctx.body = 'Success'
+      ctx.body = `The post ${title} has been created`
     } catch(e) {
       ctx.body = 'An error occured'
     }
-
   })
   
 
