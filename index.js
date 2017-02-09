@@ -3,6 +3,7 @@ import Router from 'koa-router'
 import json from 'koa-json'
 import bodyParser from 'koa-bodyparser' 
 import db from './utils/mongo'
+import entry from './routes/entry'
 import user from './routes/user'
 import post from './routes/post'
 import error from './routes/error'
@@ -13,6 +14,7 @@ const PORT = 3000
 app.use(bodyParser())
 app.use(json())
 
+router.use(entry.routes())
 router.use(post.routes())
 router.use(user.routes())
 router.use(error.routes())

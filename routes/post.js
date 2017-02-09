@@ -3,6 +3,12 @@ import PostSchema from '../models/schemas/PostSchema'
 const router = new Router()
 
 router
+  .get('post', async (ctx, next) => {
+    ctx.body = {
+      all_posts: 'http://localhost:3000/posts',
+      one_post: 'http://localhost:3000/posts/{id}'
+    }
+  })
   .get('posts', async (ctx, next) => {
     try {
       ctx.body = await PostSchema.find({}).sort({'date': -1}).limit(20)
