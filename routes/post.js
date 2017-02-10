@@ -1,6 +1,8 @@
 import Router from 'koa-router'
 import PostSchema from '../models/schemas/PostSchema'
 import createPostCheck from './middlewares/createPost'
+import deletePostCheck from './middlewares/deletePost'
+import updatePostCheck from './middlewares/updatePost'
 const router = new Router()
 
 router
@@ -33,7 +35,7 @@ router
     try {
       ctx.body = await PostSchema.findOne({_id})
     } catch(e) {
-      ctx.body = `Could not find a post with the id: ${_id}`
+      ctx.body = `Could not find a post with the id: { ${_id} }`
     }
   })
   .get('post/user/:author', async (ctx, next) => {
@@ -59,17 +61,17 @@ router
       ctx.body = 'An error occured'
     }
   })
-  .delete('post/delete', async (ctx, next) => {
+  .delete('post/delete', deletePostCheck, async (ctx, next) => {
     const { _id } = ctx.request.body
 
     try {
       await PostSchema.findOneAndRemove({_id})
       ctx.body = 'Post was successfully deleted.'
     } catch(e) {
-      ctx.body = 'Post could not be deleted.'
+      ctx.body = `Post with id: { ${_id} } could not be deleted.`
     }
   })
-  .put('post/update', async (ctx, next) => {
+  .put('post/update', updatePostCheck, async (ctx, next) => {
     const { _id } = ctx.request.body
 
     try {
