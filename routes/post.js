@@ -1,5 +1,6 @@
 import Router from 'koa-router'
 import PostSchema from '../models/schemas/PostSchema'
+import createPostCheck from './middlewares/createPost'
 const router = new Router()
 
 router
@@ -18,7 +19,7 @@ router
       const posts = await PostSchema.find({}).sort({'date': -1}).limit(20)
       const postsWithLink = posts.map((post) => {
         let sanetizedPost = post.toObject()
-        sanetizedPost['href'] = `http://localhost:3000/post/${post._id}`
+        sanetizedPost['single_post'] = `http://localhost:3000/post/${post._id}`
         return sanetizedPost
       })
       ctx.body = postsWithLink
@@ -44,7 +45,7 @@ router
       ctx.body = `The user ${author} has not created any posts.`
     }
   })
-  .post('post/create', async (ctx, next) => {
+  .post('post/create', createPostCheck, async (ctx, next) => {
     const { title, body, author } = ctx.request.body
 
     try {
