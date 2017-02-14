@@ -4,7 +4,6 @@ import domain from '../utils/domain'
 import createPostCheck from './middlewares/createPost'
 import deletePostCheck from './middlewares/deletePost'
 import updatePostCheck from './middlewares/updatePost'
-import organize from './utils/organize'
 const router = new Router()
 
 router
@@ -20,9 +19,7 @@ router
         })
       })
 
-      posts = [...posts, { self: ctx.url }]
-      
-      ctx.body = posts
+      ctx.body = [...posts, { self: `${ domain() }${ ctx.url }` }]
     } catch(e) {
       ctx.body = 'Could not display any posts'
     }
@@ -31,8 +28,10 @@ router
     const { _id } = ctx.params
     
     try {
-      const post = await PostSchema.findOne({ _id })
-      ctx.body = organize(post)
+      const post = await PostSchema.findOne({ _id }, '_id author title body', { lean: true })
+      ctx.body = Object.assign(post, {
+        self: `${ domain() }${ ctx.url }`
+      })
     } catch(e) {
       ctx.body = `Could not find a post with the id: { ${ _id } }`
     }
