@@ -36,15 +36,6 @@ router
       ctx.body = `Could not find a post with the id: { ${ _id } }`
     }
   })
-  .get('post/user/:author', async (ctx, next) => {
-    const { author } = ctx.params
-
-    try {
-      ctx.body = await PostSchema.find({ author })
-    } catch(e) {
-      ctx.body = `The user ${ author } has not created any posts.`
-    }
-  })
   .post('posts', createPostCheck, async (ctx, next) => {
     const { title, body, author } = ctx.request.body
 
