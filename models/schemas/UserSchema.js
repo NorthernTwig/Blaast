@@ -2,16 +2,16 @@ import mongoose from 'mongoose'
 const Schema = mongoose.Schema
 
 export default mongoose.model('UserSchema', mongoose.Schema({
-  Username: {
+  username: {
     type: String,
     required: true
   },
-  Password: {
+  password: {
     type: String,
     default: '123',
     required: true
   },
-  Name: {
+  name: {
     type: String,
     required: true
   },

@@ -9,22 +9,11 @@ const router = new Router()
 
 
 router
-  .get('post', async (ctx, next) => {
-    ctx.body = {
-      all_posts: { href: 'http://localhost:3000/posts', method: 'GET' },
-      one_post: { href: 'http://localhost:3000/posts/{id}', method: 'GET' },
-      user_posts: { href: 'http://localhost:3000/posts/user/{username}', method: 'GET' },
-      create_post: { href: 'http://localhost:3000/posts/create', method: 'POST' },
-      delete_post: { href: 'http://localhost:3000/posts/delete', method: 'DELETE' },
-      update_post: { href: 'http://localhost:3000/posts/update', method: 'PUT' }
-    }
-  })
   .get('posts', async (ctx, next) => {
     try {
-      const posts = await PostSchema.find({}).sort({'date': -1}).limit(20)
-      const postsWithLink = posts.map((post) => organize(post))
-      postsWithLink.push({ href: ctx.url })
-      ctx.body = postsWithLink
+      let posts = await PostSchema.find({}, '_id author title body').sort({'date': -1}).limit(20)
+      posts = [...posts, { self: ctx.url }]
+      ctx.body = posts
     } catch(e) {
       ctx.body = 'Could not display any posts'
     }
@@ -48,38 +37,42 @@ router
       ctx.body = `The user ${author} has not created any posts.`
     }
   })
-  .post('post/create', createPostCheck, async (ctx, next) => {
+  .post('posts', createPostCheck, async (ctx, next) => {
     const { title, body, author } = ctx.request.body
 
     try {
-      await PostSchema.create({
+      const newPost = await PostSchema.create({
         title,
         body,
         author
       })
+
+      ctx.status = 201
+      ctx.response.header['Access-Control-Expose-Headers'] = `Location`
+      ctx.response.header['Location'] = `http://localhost:3000/posts/${ newPost._id }`
       ctx.body = `The post "${title}" has been created`
     } catch(e) {
       ctx.body = 'An error occured'
     }
   })
-  .delete('post/delete', deletePostCheck, async (ctx, next) => {
-    const { _id } = ctx.request.body
+  .delete('posts/:_id', deletePostCheck, async (ctx, next) => {
+    const { _id } = ctx.params
 
     try {
-      await PostSchema.findOneAndRemove({_id})
+      await PostSchema.findOneAndRemove({ _id })
       ctx.body = 'Post was successfully deleted.'
     } catch(e) {
-      ctx.body = `Post with id: { ${_id} } could not be deleted.`
+      ctx.body = `Post with id: { ${ _id } } could not be deleted.`
     }
   })
-  .put('post/update', updatePostCheck, async (ctx, next) => {
-    const { _id } = ctx.request.body
+  .put('posts/:_id', updatePostCheck, async (ctx, next) => {
+    const { _id } = ctx.params
 
     try {
-      const post = await PostSchema.findOne({_id})
+      const post = await PostSchema.findOne({ _id })
       const sanitizedPost = post.toObject()
       const updatedPost = Object.assign({}, sanitizedPost, ctx.request.body)
-      await PostSchema.findOneAndUpdate({_id}, updatedPost)
+      await PostSchema.findOneAndUpdate({ _id }, updatedPost)
       ctx.body = 'Post was successfully updated'
     } catch(e) {
       ctx.body = 'Could not update post'

@@ -1,5 +1,6 @@
 export default async (ctx, next) => {
-  const { title, body, _id } = ctx.request.body
+  const { _id } = ctx.params
+  const { title, body } = ctx.request.body
   const newPostObject = {
     _id,
     title,
