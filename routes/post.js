@@ -8,10 +8,14 @@ const router = new Router()
 
 router
   .get('posts', async (ctx, next) => {
+    const offset = ctx.query.offset || 0
+    const test = ctx.query.limit || 20
+
     try {
       let posts = await PostSchema.find({}, '_id author title body', { lean: true })
         .sort({ 'date': -1 })
-        .limit(20)
+        .limit(test)
+        .skip(offset * test)
 
       posts = await posts.map(post => {
         return Object.assign(post, {
@@ -40,7 +44,7 @@ router
     const { title, body, author } = ctx.request.body
 
     try {
-      const newPost = await PostSchema.create({
+      const newPost = PostSchema.create({
         title,
         body,
         author
@@ -66,10 +70,7 @@ router
     const { _id } = ctx.params
 
     try {
-      const post = await PostSchema.findOne({ _id })
-      const sanitizedPost = post.toObject()
-      const updatedPost = Object.assign({}, sanitizedPost, ctx.request.body)
-      await PostSchema.findOneAndUpdate({ _id }, updatedPost)
+      await PostSchema.findOneAndUpdate({ _id }, ctx.request.body)
       ctx.body = 'Post was successfully updated'
     } catch(e) {
       ctx.body = 'Could not update post'
