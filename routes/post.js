@@ -1,18 +1,27 @@
 import Router from 'koa-router'
 import PostSchema from '../models/schemas/PostSchema'
+import domain from '../utils/domain'
 import createPostCheck from './middlewares/createPost'
 import deletePostCheck from './middlewares/deletePost'
 import updatePostCheck from './middlewares/updatePost'
 import organize from './utils/organize'
 const router = new Router()
 
-
-
 router
   .get('posts', async (ctx, next) => {
     try {
-      let posts = await PostSchema.find({}, '_id author title body').sort({'date': -1}).limit(20)
+      let posts = await PostSchema.find({}, '_id author title body', { lean: true })
+        .sort({ 'date': -1 })
+        .limit(20)
+
+      posts = await posts.map(post => {
+        return Object.assign(post, {
+          self: `${ domain() }${ ctx.url }${ post._id }`
+        })
+      })
+
       posts = [...posts, { self: ctx.url }]
+      
       ctx.body = posts
     } catch(e) {
       ctx.body = 'Could not display any posts'
@@ -22,19 +31,19 @@ router
     const { _id } = ctx.params
     
     try {
-      const post = await PostSchema.findOne({_id})
+      const post = await PostSchema.findOne({ _id })
       ctx.body = organize(post)
     } catch(e) {
-      ctx.body = `Could not find a post with the id: { ${_id} }`
+      ctx.body = `Could not find a post with the id: { ${ _id } }`
     }
   })
   .get('post/user/:author', async (ctx, next) => {
     const { author } = ctx.params
 
     try {
-      ctx.body = await PostSchema.find({author})
+      ctx.body = await PostSchema.find({ author })
     } catch(e) {
-      ctx.body = `The user ${author} has not created any posts.`
+      ctx.body = `The user ${ author } has not created any posts.`
     }
   })
   .post('posts', createPostCheck, async (ctx, next) => {
@@ -48,9 +57,7 @@ router
       })
 
       ctx.status = 201
-      ctx.response.header['Access-Control-Expose-Headers'] = `Location`
-      ctx.response.header['Location'] = `http://localhost:3000/posts/${ newPost._id }`
-      ctx.body = `The post "${title}" has been created`
+      ctx.body = `The post "${ title }" has been created`
     } catch(e) {
       ctx.body = 'An error occured'
     }
