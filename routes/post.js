@@ -3,7 +3,10 @@ import PostSchema from '../models/schemas/PostSchema'
 import createPostCheck from './middlewares/createPost'
 import deletePostCheck from './middlewares/deletePost'
 import updatePostCheck from './middlewares/updatePost'
+import organize from './utils/organize'
 const router = new Router()
+
+
 
 router
   .get('post', async (ctx, next) => {
@@ -19,11 +22,8 @@ router
   .get('posts', async (ctx, next) => {
     try {
       const posts = await PostSchema.find({}).sort({'date': -1}).limit(20)
-      const postsWithLink = posts.map((post) => {
-        let sanetizedPost = post.toObject()
-        sanetizedPost['single_post'] = `http://localhost:3000/posts/${post._id}`
-        return sanetizedPost
-      })
+      const postsWithLink = posts.map((post) => organize(post))
+      postsWithLink.push({ href: ctx.url })
       ctx.body = postsWithLink
     } catch(e) {
       ctx.body = 'Could not display any posts'
@@ -33,7 +33,8 @@ router
     const { _id } = ctx.params
     
     try {
-      ctx.body = await PostSchema.findOne({_id})
+      const post = await PostSchema.findOne({_id})
+      ctx.body = organize(post)
     } catch(e) {
       ctx.body = `Could not find a post with the id: { ${_id} }`
     }
