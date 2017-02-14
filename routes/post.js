@@ -9,11 +9,11 @@ router
   .get('post', async (ctx, next) => {
     ctx.body = {
       all_posts: { href: 'http://localhost:3000/posts', method: 'GET' },
-      one_post: { href: 'http://localhost:3000/post/{id}', method: 'GET' },
+      one_post: { href: 'http://localhost:3000/posts/{id}', method: 'GET' },
       user_posts: { href: 'http://localhost:3000/posts/user/{username}', method: 'GET' },
-      create_post: { href: 'http://localhost:3000/post/create', method: 'POST' },
-      delete_post: { href: 'http://localhost:3000/post/delete', method: 'DELETE' },
-      update_post: { href: 'http://localhost:3000/post/update', method: 'PUT' }
+      create_post: { href: 'http://localhost:3000/posts/create', method: 'POST' },
+      delete_post: { href: 'http://localhost:3000/posts/delete', method: 'DELETE' },
+      update_post: { href: 'http://localhost:3000/posts/update', method: 'PUT' }
     }
   })
   .get('posts', async (ctx, next) => {
@@ -21,7 +21,7 @@ router
       const posts = await PostSchema.find({}).sort({'date': -1}).limit(20)
       const postsWithLink = posts.map((post) => {
         let sanetizedPost = post.toObject()
-        sanetizedPost['single_post'] = `http://localhost:3000/post/${post._id}`
+        sanetizedPost['single_post'] = `http://localhost:3000/posts/${post._id}`
         return sanetizedPost
       })
       ctx.body = postsWithLink
@@ -29,7 +29,7 @@ router
       ctx.body = 'Could not display any posts'
     }
   })
-  .get('post/:_id', async (ctx, next) => {
+  .get('posts/:_id', async (ctx, next) => {
     const { _id } = ctx.params
     
     try {
