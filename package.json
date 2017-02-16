@@ -25,10 +25,13 @@
   },
   "homepage": "https://github.com/1dv527/on222bx-examination-2#readme",
   "dependencies": {
+    "dotenv": "^4.0.0",
+    "jsonwebtoken": "^7.3.0",
     "koa": "^2.0.0-alpha.7",
     "koa-bodyparser": "^3.2.0",
     "koa-cors": "git+https://git@github.com/kunyan/koa-cors.git#next",
     "koa-json": "^2.0.2",
+    "koa-jwt": "^2.2.2",
     "koa-router": "^7.0.1",
     "mongoose": "^4.8.1"
   },

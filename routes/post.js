@@ -4,31 +4,41 @@ import domain from '../utils/domain'
 import createPostCheck from './middlewares/createPost'
 import deletePostCheck from './middlewares/deletePost'
 import updatePostCheck from './middlewares/updatePost'
+import jwt from './middlewares/jwt'
 const router = new Router()
+
+const test = (offset, limit, posts, path) => [
+  
+]
 
 router
   .get('posts', async (ctx, next) => {
-    const offset = ctx.query.offset || 0
-    const test = ctx.query.limit || 20
+    const limit = parseInt(ctx.query.limit) || 10
+    const offset = parseInt(ctx.query.offset) || 0
+    const path = ctx.req._parsedUrl.pathname
 
     try {
       let posts = await PostSchema.find({}, '_id author title body', { lean: true })
         .sort({ 'date': -1 })
-        .limit(test)
-        .skip(offset * test)
+        .limit(limit)
+        .skip(offset * limit)
 
       posts = await posts.map(post => {
         return Object.assign(post, {
-          self: `${ domain() }${ ctx.url }${ post._id }`
+          self: `${ domain() }${ path }/${ post._id }`
         })
       })
 
-      ctx.body = [...posts, { self: `${ domain() }${ ctx.url }` }]
+      ctx.body = [...posts, {
+        self: `${ domain() }${ ctx.url }`,
+        next: posts.length >= limit ? `${ domain() }${ path }?offset=${ offset + 1 }&limit=${ limit }` : undefined,
+        prev: offset !== 0 ? `${ domain() }${ path }?offset=${ offset - 1 }&limit=${ limit }` : undefined
+      }]
     } catch(e) {
-      ctx.body = 'Could not display any posts'
+      ctx.body = 'Could not display any posts' + e
     }
   })
-  .get('posts/:_id', async (ctx, next) => {
+  .get('posts/:_id', jwt, async (ctx, next) => {
     const { _id } = ctx.params
     
     try {

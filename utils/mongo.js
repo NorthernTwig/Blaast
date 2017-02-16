@@ -1,9 +1,11 @@
+import dotenv from 'dotenv'
+dotenv.config()
 import mongoose from 'mongoose'
 const db = mongoose.connection
 
 mongoose.Promise = global.Promise
 
-mongoose.connect('mongodb://localhost/blog')
+mongoose.connect(process.env.DB_HOST)
 
 db.on('error', err => {
     console.log(err, 'Mongo could not establish connection')
