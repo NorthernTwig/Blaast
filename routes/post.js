@@ -38,7 +38,7 @@ router
       ctx.body = 'Could not display any posts' + e
     }
   })
-  .get('posts/:_id', jwt, async (ctx, next) => {
+  .get('posts/:_id', async (ctx, next) => {
     const { _id } = ctx.params
     
     try {

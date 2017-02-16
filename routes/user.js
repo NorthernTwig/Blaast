@@ -1,28 +1,21 @@
 import Router from 'koa-router'
 import mongoose from 'mongoose'
 import userSchema from '../models/schemas/UserSchema'
+import createUserCheck from './middlewares/createUser'
 const router = new Router()
 
 router
   .get('users', async (ctx, next) => {
-    ctx.body = await userSchema.find()
+    ctx.body = await userSchema.find({}, 'id username name', {lean: true})
   })
   .get('users/:id', async (ctx, next) => {
-    ctx.body = {
-      id: 0,
-      username: ctx.params.username,
-      name: 'Oscar Nordquist',
-      posts: 'http://localhost:3000/posts',
-      comments: 'http://localhost:3000/comments'
-    }
+    ctx.body = userSchema.find({}, 'id username name')
   })
-  .post('users/:id', async (ctx, next) => {
+  .post('users', createUserCheck, async (ctx, next) => {
     const { username, password, name } = ctx.request.body
 
-    
-
     try {
-      await PostSchema.create({
+      await userSchema.create({
         username,
         password,
         name

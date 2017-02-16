@@ -8,7 +8,6 @@ export default mongoose.model('UserSchema', mongoose.Schema({
   },
   password: {
     type: String,
-    default: '123',
     required: true
   },
   name: {
