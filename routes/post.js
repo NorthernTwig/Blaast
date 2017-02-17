@@ -1,6 +1,5 @@
 import Router from 'koa-router'
 import PostSchema from '../models/schemas/PostSchema'
-import UserSchema from '../models/schemas/UserSchema'
 import domain from '../utils/domain'
 import pagination from '../utils/pagination'
 import createPostCheck from './middlewares/createPost'
@@ -23,6 +22,9 @@ router
 
       posts = await posts.map(post => {
         return Object.assign(post, {
+          author: Object.assign(post.author, {
+            self: `${ domain() }/users/${ post.author._id }`
+          }), 
           self: `${ domain() }${ path }/${ post._id }`
         })
       })
