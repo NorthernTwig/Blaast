@@ -1,14 +1,13 @@
 export default async (ctx, next) => {
-  const { username, password, name } = ctx.request.body
+  const { username, password } = ctx.request.body
   const newUserObject = {
     username,
-    password,
-    name
+    password
   }
   if (Object.values(newUserObject).includes(undefined)) {
     return ctx.body = {
       status: ctx.status,
-      error: 'Data is missing from POST. { username }, { password } or { name } is missing.'
+      error: 'Data is missing from POST. { username }, { password } is missing.'
     }
   }
   await next()

@@ -1,5 +1,6 @@
 import Router from 'koa-router'
 import PostSchema from '../models/schemas/PostSchema'
+import UserSchema from '../models/schemas/UserSchema'
 import domain from '../utils/domain'
 import createPostCheck from './middlewares/createPost'
 import deletePostCheck from './middlewares/deletePost'
@@ -50,6 +51,18 @@ router
       ctx.body = `Could not find a post with the id: { ${ _id } }`
     }
   })
+  .get('posts/users/:_id', async (ctx, next) => {
+    const { _id } = ctx.params 
+
+    try {
+      const { username } = await UserSchema.findOne({ _id }, 'username', { lean: true })
+      const posts = await PostSchema.find({ author: username }, 'title body author', { lean: true })
+      ctx.body = posts
+    } catch(e) {
+      console.log(e)
+    }
+    
+  })
   .post('posts', createPostCheck, async (ctx, next) => {
     const { title, body, author } = ctx.request.body
 
@@ -87,5 +100,4 @@ router
     }
   })
   
-
 export default router

@@ -12,6 +12,8 @@ export default mongoose.model('PostSchema', mongoose.Schema({
   },
   author: {
     type: String,
+    name: String,
+    _id: String,
     required: true
   },
   date: {

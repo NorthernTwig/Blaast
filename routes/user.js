@@ -1,5 +1,6 @@
 import Router from 'koa-router'
 import mongoose from 'mongoose'
+import { hash } from 'bcrypt-as-promised'
 import userSchema from '../models/schemas/UserSchema'
 import createUserCheck from './middlewares/createUser'
 import domain from '../utils/domain'
@@ -12,7 +13,8 @@ router
 
     users = await users.map(user => {
       return Object.assign(user, {
-        self: `${ domain() }${ path }/${ user._id }`
+        self: `${ domain() }${ path }/${ user._id }`,
+        posts: `${ domain() }/posts/users/${ user._id }`
       })
     })
 
@@ -24,16 +26,18 @@ router
   })
   .post('users', createUserCheck, async (ctx, next) => {
     const { username, password, name } = ctx.request.body
+    const saltRounds = 10
 
     try {
+      const hashedPassword = await hash(password, saltRounds)
       await userSchema.create({
+        password: hashedPassword,
         username,
-        password,
         name
       })
       ctx.body = `The user "${username}" has been created`
     } catch(e) {
-      ctx.body = 'An error occured'
+      ctx.body = 'An error occured' + e
     }
   })
 
