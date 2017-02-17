@@ -40,6 +40,9 @@ router
     try {
       const post = await PostSchema.findOne({ _id }, '_id author title body', { lean: true })
       ctx.body = Object.assign(post, {
+        author: Object.assign(post.author, {
+          self: `${ domain() }/users/${ post.author._id }`
+        }), 
         self: `${ domain() }${ ctx.url }`
       })
     } catch(e) {
@@ -64,6 +67,9 @@ router
 
       posts = await posts.map(post => {
         return Object.assign(post, {
+          author: Object.assign(post.author, {
+            self: `${ domain() }/users/${ post.author._id }`
+          }), 
           self: `${ domain() }/posts/${ post._id }`
         })
       })

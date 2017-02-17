@@ -9,7 +9,7 @@ const router = new Router()
 router
   .get('users', async (ctx, next) => {
     const path = ctx.req._parsedUrl.pathname
-    let users = await userSchema.find({}, 'id username name', {lean: true}) 
+    let users = await userSchema.find({}, 'id username name', { lean: true }) 
 
     users = await users.map(user => {
       return Object.assign(user, {
@@ -22,7 +22,14 @@ router
   })
   .get('users/:_id', async (ctx, next) => {
     const { _id } = ctx.params
-    ctx.body = await userSchema.find({_id}, 'id username name')
+    const path = ctx.req._parsedUrl.pathname
+    const user = await userSchema.findOne({_id}, 'id username name', { lean: true })
+    Object.assign(user, {
+      self: `${ domain() }${ path }`,
+      posts: `${ domain() }/posts/users/${ user._id }`
+    })
+
+    ctx.body = user
   })
   .post('users', createUserCheck, async (ctx, next) => {
     const { username, password, name } = ctx.request.body
