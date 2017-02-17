@@ -1,5 +1,6 @@
 import dotenv from 'dotenv'
 dotenv.config()
+import credentialCheck from './middlewares/credentialCheck'
 import Router from 'koa-router'
 import jwt from 'jsonwebtoken'
 
