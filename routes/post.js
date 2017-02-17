@@ -2,15 +2,12 @@ import Router from 'koa-router'
 import PostSchema from '../models/schemas/PostSchema'
 import UserSchema from '../models/schemas/UserSchema'
 import domain from '../utils/domain'
+import pagination from '../utils/pagination'
 import createPostCheck from './middlewares/createPost'
 import deletePostCheck from './middlewares/deletePost'
 import updatePostCheck from './middlewares/updatePost'
 import jwt from './middlewares/jwt'
 const router = new Router()
-
-const test = (offset, limit, posts, path) => [
-  
-]
 
 router
   .get('posts', async (ctx, next) => {
@@ -30,11 +27,7 @@ router
         })
       })
 
-      ctx.body = [...posts, {
-        self: `${ domain() }${ ctx.url }`,
-        next: posts.length >= limit ? `${ domain() }${ path }?offset=${ offset + 1 }&limit=${ limit }` : undefined,
-        prev: offset !== 0 ? `${ domain() }${ path }?offset=${ offset - 1 }&limit=${ limit }` : undefined
-      }]
+      ctx.body = pagination(posts, ctx.url, limit, offset, path)
     } catch(e) {
       ctx.body = 'Could not display any posts' + e
     }
@@ -53,24 +46,43 @@ router
   })
   .get('posts/users/:_id', async (ctx, next) => {
     const { _id } = ctx.params 
+    const limit = parseInt(ctx.query.limit) || 3
+    const offset = parseInt(ctx.query.offset) || 0
+    const path = ctx.req._parsedUrl.pathname
 
     try {
-      const { username } = await UserSchema.findOne({ _id }, 'username', { lean: true })
-      const posts = await PostSchema.find({ author: username }, 'title body author', { lean: true })
-      ctx.body = posts
+      let posts = await PostSchema.find({ 'author._id': _id }, 'title body author', { lean: true })
+        .sort({ 'date': -1 })
+        .limit(limit)
+        .skip(offset * limit)
+      
+      if (posts.length <= 0) {
+        throw new Error('No posts from this user found.')
+      }
+
+      posts = await posts.map(post => {
+        return Object.assign(post, {
+          self: `${ domain() }/posts/${ post._id }`
+        })
+      })
+
+      ctx.body = pagination(posts, ctx.url, limit, offset, path)
     } catch(e) {
-      console.log(e)
+      ctx.body = e.message
     }
     
   })
-  .post('posts', createPostCheck, async (ctx, next) => {
-    const { title, body, author } = ctx.request.body
+  .post('posts', createPostCheck, jwt, async (ctx, next) => {
+    const { title, body } = ctx.request.body
 
     try {
       const newPost = PostSchema.create({
         title,
         body,
-        author
+        author: {
+          name: ctx.state.user.name,
+          _id: ctx.state.user._id
+        }
       })
 
       ctx.status = 201
