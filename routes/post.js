@@ -90,8 +90,8 @@ router
         title,
         body,
         author: {
-          name,
-          _id
+          _id,
+          name
         }
       })
 

@@ -7,10 +7,18 @@ export default mongoose.model('CommentSchema', mongoose.Schema({
     required: true
   },
   author: {
-    type: Object,
-    required: true
+    _id: {
+      type: Schema.Types.ObjectId,
+      ref: 'UserSchema',
+      required: true
+    },
+    name: {
+      type: String,
+      ref: 'UserSchema',
+      required: true
+    }
   },
-  postId: {
+  post: {
     type: Schema.Types.ObjectId,
     ref: 'PostSchema',
     required: true

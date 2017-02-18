@@ -24,13 +24,13 @@ router
     ctx.body = comments
   })
   .post('comments', jwt, async (ctx, next) => {
-    const { body, postId } = ctx.request.body
+    const { body, post } = ctx.request.body
     const { name, _id } = ctx.state.user
 
     try {
       const newComment = await CommentSchema.create({
         body,
-        postId,
+        post,
         author: {
           _id,
           name
@@ -42,6 +42,6 @@ router
     } catch (e) {
       ctx.body = `An error occured. ${e}`
     }
-  })  
+  })
 
 export default router

@@ -11,8 +11,16 @@ export default mongoose.model('PostSchema', mongoose.Schema({
     required: true
   },
   author: {
-    type: Object,
-    required: true
+    _id: {
+      type: Schema.Types.ObjectId,
+      ref: 'UserSchema',
+      required: true
+    },
+    name: {
+      type: String,
+      ref: 'UserSchema',
+      required: true
+    }
   },
   date: {
     type: Date,
