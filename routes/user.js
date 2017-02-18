@@ -1,7 +1,7 @@
 import Router from 'koa-router'
 import mongoose from 'mongoose'
 import { hash } from 'bcrypt-as-promised'
-import userSchema from '../models/schemas/UserSchema'
+import userSchema from '../models/UserSchema'
 import createUserCheck from './middlewares/createUser'
 import webhookCheck from './middlewares/webhookCheck'
 import baseUrl from './libs/baseUrl'

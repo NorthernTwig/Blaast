@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events'
 import rp from 'request-promise'
-import userSchema from '../../models/schemas/UserSchema'
+import userSchema from '../../models/UserSchema'
 
 const emitter = new EventEmitter()
 

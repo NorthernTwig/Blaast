@@ -1,5 +1,5 @@
 import Router from 'koa-router'
-import PostSchema from '../models/schemas/PostSchema'
+import PostSchema from '../models/PostSchema'
 import baseUrl from './libs/baseUrl'
 import pagination from './libs/pagination'
 import emitter from './libs/eventBus'

@@ -2,7 +2,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 import { compare } from 'bcrypt-as-promised'
 import credentialCheck from './middlewares/credentialCheck'
-import userSchema from '../models/schemas/UserSchema'
+import userSchema from '../models/UserSchema'
 import Router from 'koa-router'
 import jwt from 'jsonwebtoken'
 const router = new Router()

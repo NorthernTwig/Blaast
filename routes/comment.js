@@ -1,5 +1,5 @@
 import Router from 'koa-router'
-import CommentSchema from '../models/schemas/CommentSchema'
+import CommentSchema from '../models/CommentSchema'
 import jwt from './middlewares/jwt'
 import pagination from './libs/pagination'
 import emitter from './libs/eventBus'
