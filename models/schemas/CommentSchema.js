@@ -10,6 +10,10 @@ export default mongoose.model('CommentSchema', mongoose.Schema({
     type: Object,
     required: true
   },
+  post: {
+    type: Object,
+    required: true
+  },
   date: {
     type: Date,
     default: Date.now,
