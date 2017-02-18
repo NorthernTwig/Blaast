@@ -9,6 +9,7 @@ import login from './routes/login'
 import entry from './routes/entry'
 import user from './routes/user'
 import post from './routes/post'
+import comment from './routes/comment'
 import error from './routes/error'
 
 const app = new Koa()
@@ -20,6 +21,7 @@ app.use(json())
 
 router.use(login.routes())
 router.use(post.routes())
+router.use(comment.routes())
 router.use(user.routes())
 router.use(entry.routes())
 router.use(error.routes())

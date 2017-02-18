@@ -25,8 +25,6 @@ router
       })
     })
 
-    
-
     ctx.body = pagination(users, ctx.url, limit, offset, path)
   })
   .get('users/:_id', async (ctx, next) => {
