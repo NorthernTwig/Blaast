@@ -18,7 +18,7 @@ router
     const path = ctx.req._parsedUrl.pathname
 
     try {
-      const posts = await PostSchema.find({}, '_id author title body', { lean: true })
+      const posts = await PostSchema.find({}, '_id author title body date', { lean: true })
         .sort({ 'date': -1 })
         .limit(limit)
         .skip(offset * limit)
@@ -33,7 +33,7 @@ router
     const { _id } = ctx.params
     
     try {
-      const post = await PostSchema.findOne({ _id }, '_id author title body', { lean: true })
+      const post = await PostSchema.findOne({ _id }, '_id author title body date', { lean: true })
       ctx.body = generateSelf(post, ctx)
     } catch(e) {
       ctx.body = `Could not find a post with the id: { ${ _id } }`
@@ -46,7 +46,7 @@ router
     const path = ctx.req._parsedUrl.pathname
 
     try {
-      const posts = await PostSchema.find({ 'author._id': _id }, 'title body author', { lean: true })
+      const posts = await PostSchema.find({ 'author._id': _id }, '_id title body author date', { lean: true })
         .sort({ 'date': -1 })
         .limit(limit)
         .skip(offset * limit)
