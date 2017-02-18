@@ -83,14 +83,15 @@ router
   })
   .post('posts', createPostCheck, jwt, async (ctx, next) => {
     const { title, body } = ctx.request.body
+    const { name, _id } = ctx.state.user
 
     try {
-      const newPost = PostSchema.create({
+      const newPost = await PostSchema.create({
         title,
         body,
         author: {
-          name: ctx.state.user.name,
-          _id: ctx.state.user._id
+          name,
+          _id
         }
       })
 

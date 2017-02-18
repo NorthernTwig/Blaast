@@ -11,7 +11,7 @@ router
     const offset = parseInt(ctx.query.offset) || 0
     const path = ctx.req._parsedUrl.pathname
     
-    const comments = CommentSchema.find({}, '_id body author post date', { lean: true })
+    const comments = await CommentSchema.find({}, '_id body author postId date', { lean: true })
         .sort({ 'date': -1 })
         .limit(limit)
         .skip(offset * limit)
@@ -21,13 +21,27 @@ router
   .get('comments/:_id', async (ctx, next) => {
     const { _id } = ctx.params
     const comment = CommentSchema.findOne({ _id }, '_id body author post date', { lean: true })
-    ctx.body = comments  
+    ctx.body = comments
   })
   .post('comments', jwt, async (ctx, next) => {
-    const { body, post } = ctx.request.body
+    const { body, postId } = ctx.request.body
+    const { name, _id } = ctx.state.user
 
-    
+    try {
+      const newComment = await CommentSchema.create({
+        body,
+        postId,
+        author: {
+          _id,
+          name
+        }
+      })
 
+      ctx.status = 201
+      ctx.body = `Comment has been created`
+    } catch (e) {
+      ctx.body = `An error occured. ${e}`
+    }
   })  
 
 export default router

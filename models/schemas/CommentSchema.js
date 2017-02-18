@@ -10,8 +10,9 @@ export default mongoose.model('CommentSchema', mongoose.Schema({
     type: Object,
     required: true
   },
-  post: {
-    type: Object,
+  postId: {
+    type: Schema.Types.ObjectId,
+    ref: 'PostSchema',
     required: true
   },
   date: {
