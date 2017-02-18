@@ -5,6 +5,7 @@ import userSchema from '../models/schemas/UserSchema'
 import createUserCheck from './middlewares/createUser'
 import baseUrl from './libs/baseUrl'
 import pagination from './libs/pagination'
+import { users as generateSelf } from './libs/generateSelf'
 const router = new Router()
 
 router
@@ -13,31 +14,30 @@ router
     const offset = parseInt(ctx.query.offset) || 0
     const path = ctx.req._parsedUrl.pathname
 
-    let users = await userSchema.find({}, 'id username name', { lean: true }) 
-        .sort({ 'date': -1 })
-        .limit(limit)
-        .skip(offset * limit)
+    try {
+      const users = await userSchema.find({}, 'id username name', { lean: true }) 
+          .sort({ 'date': -1 })
+          .limit(limit)
+          .skip(offset * limit)
+      const usersWithSelf = users.map(user => generateSelf(user, ctx))
 
-    users = await users.map(user => {
-      return Object.assign(user, {
-        self: `${ baseUrl }${ path }/${ user._id }`,
-        posts: `${ baseUrl }/posts/users/${ user._id }`
-      })
-    })
+      ctx.body = pagination(usersWithSelf, ctx.url, limit, offset, path)
+    } catch(e) {
+      ctx.body = e
+    }
 
-    ctx.body = pagination(users, ctx.url, limit, offset, path)
   })
   .get('users/:_id', async (ctx, next) => {
     const { _id } = ctx.params
     const path = ctx.req._parsedUrl.pathname
-    const user = await userSchema.findOne({_id}, 'id username name', { lean: true })
-    Object.assign(user, {
-      self: `${ baseUrl }${ path }`,
-      posts: `${ baseUrl }/posts/users/${ user._id }`,
-      comments: `${ baseUrl }/comments/users/${ user._id }`
-    })
 
-    ctx.body = user
+    try {
+      const user = await userSchema.findOne({_id}, 'id username name', { lean: true })
+      ctx.body = generateSelf(user, ctx)
+    } catch(e) {
+      ctx.body = e
+    }
+    
   })
   .post('users', createUserCheck, async (ctx, next) => {
     const { username, password, name } = ctx.request.body

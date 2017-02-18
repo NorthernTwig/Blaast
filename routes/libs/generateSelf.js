@@ -1,12 +1,12 @@
 import baseUrl from './baseUrl'
 
 export const comments = (comment, ctx) => {
-  return Object.assign(comment, {
+  return Object.assign({}, comment, {
     post: {
       _id: comment.post,
       self: `${ baseUrl }/posts/${ comment.post }`
     },
-    author: Object.assign(comment.author, {
+    author: Object.assign({}, comment.author, {
       self: `${ baseUrl }/users/${ comment.author._id }`
     }),
     self: `${ baseUrl }${ ctx.url }`
@@ -14,11 +14,22 @@ export const comments = (comment, ctx) => {
 }
 
 export const posts = (post, ctx) => {
-  return Object.assign(post, {
-    author: Object.assign(post.author, {
+  const path = ctx.req._parsedUrl.pathname
+
+  return Object.assign({}, post, {
+    author: Object.assign({}, post.author, {
       self: `${ baseUrl }/users/${ post.author._id }`
     }), 
     comments: `${ baseUrl }/comments/posts/${ post.author._id }`,
     self: `${ baseUrl }${ path }/${ post._id }`
+  })
+}
+
+export const users = (user, ctx) => {
+  const path = ctx.req._parsedUrl.pathname
+  return Object.assign({}, user, {
+    self: `${ baseUrl }${ path }`,
+    posts: `${ baseUrl }/posts/users/${ user._id }`,
+    comments: `${ baseUrl }/comments/users/${ user._id }`
   })
 }
