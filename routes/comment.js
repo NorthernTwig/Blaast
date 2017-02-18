@@ -1,8 +1,8 @@
 import Router from 'koa-router'
 import CommentSchema from '../models/schemas/CommentSchema'
 import jwt from './middlewares/jwt'
-import pagination from '../utils/pagination'
-import domain from '../utils/domain'
+import pagination from './libs/pagination'
+import baseUrl from './libs/baseUrl'
 const router = new Router()
 
 
@@ -18,7 +18,16 @@ router
         .skip(offset * limit)
 
     comments = comments.map(comment => {
-      return 
+      return Object.assign(comment, {
+        post: {
+          _id: comment.post,
+          self: `${ baseUrl }/posts/${ comment.post }`
+        },
+        author: Object.assign(comment.author, {
+          self: `${ baseUrl }/users/${ comment.author._id }`
+        }),
+        self: `${ baseUrl }${ ctx.url }`
+      })
     })
 
     ctx.body = pagination(comments, ctx.url, limit, offset, path)
@@ -26,18 +35,64 @@ router
   .get('comments/:_id', async (ctx, next) => {
     const { _id } = ctx.params
     const comment = await CommentSchema.findOne({ _id }, '_id body author post date', { lean: true })
-
+    console.log('fek')
     ctx.body = Object.assign(comment, {
       post: {
         _id: comment.post,
-        self: `${ domain() }/posts/${ comment.post }`
+        self: `${ baseUrl }/posts/${ comment.post }`
       },
       author: Object.assign(comment.author, {
-        self: `${ domain() }/users/${ comment.author._id }`
+        self: `${ baseUrl }/users/${ comment.author._id }`
       }),
-      self: `${ domain() }${ ctx.url }`
+      self: `${ baseUrl }${ ctx.url }`
     })
 
+  })
+  .get('comments/users/:_id', async (ctx, next) => {
+    const limit = parseInt(ctx.query.limit) || 10
+    const offset = parseInt(ctx.query.offset) || 0
+    const path = ctx.req._parsedUrl.pathname
+    const { _id } = ctx.params
+    
+    let comments = await CommentSchema.find({ 'author._id': _id  }, '_id body author post date', { lean: true })
+
+    comments.map(comment => {
+      return Object.assign(comment, {
+        post: {
+          _id: comment.post,
+          self: `${ baseUrl }/posts/${ comment.post }`
+        },
+        author: Object.assign(comment.author, {
+          self: `${ baseUrl }/users/${ comment.author._id }`
+        }),
+        self: `${ baseUrl }${ ctx.url }`
+      })
+    })
+
+    ctx.body = comments
+  })
+  .get('comments/posts/:_id', async (ctx, next) => {
+    const limit = parseInt(ctx.query.limit) || 10
+    const offset = parseInt(ctx.query.offset) || 0
+    const path = ctx.req._parsedUrl.pathname
+    const { _id } = ctx.params
+
+    let comments = await CommentSchema.find({ 'post': _id  }, '_id body author post date', { lean: true })
+
+    comments = comments.map(comment => {
+      return Object.assign(comment, {
+        post: {
+          _id: comment.post,
+          self: `${ baseUrl }/posts/${ comment.post }`
+        },
+        author: Object.assign(comment.author, {
+          self: `${ baseUrl }/users/${ comment.author._id }`
+        }),
+        self: `${ baseUrl }${ ctx.url }`
+      })
+    })
+
+    ctx.body = pagination(comments, ctx.url, limit, offset, path)
   })
   .post('comments', jwt, async (ctx, next) => {
     const { body, post } = ctx.request.body

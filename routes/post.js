@@ -1,13 +1,14 @@
 import Router from 'koa-router'
 import PostSchema from '../models/schemas/PostSchema'
-import domain from '../utils/domain'
-import pagination from '../utils/pagination'
+import baseUrl from './libs/baseUrl'
+import pagination from './libs/pagination'
 import createPostCheck from './middlewares/createPost'
 import deletePostCheck from './middlewares/deletePost'
 import updatePostCheck from './middlewares/updatePost'
 import userOwnsCheck from './middlewares/userOwns'
 import jwt from './middlewares/jwt'
 const router = new Router()
+
 
 router
   .get('posts', async (ctx, next) => {
@@ -24,9 +25,10 @@ router
       posts = await posts.map(post => {
         return Object.assign(post, {
           author: Object.assign(post.author, {
-            self: `${ domain() }/users/${ post.author._id }`
+            self: `${ baseUrl }/users/${ post.author._id }`
           }), 
-          self: `${ domain() }${ path }/${ post._id }`
+          comments: `${ baseUrl }/comments/posts/${ post.author._id }`,
+          self: `${ baseUrl }${ path }/${ post._id }`
         })
       })
 
@@ -42,9 +44,10 @@ router
       const post = await PostSchema.findOne({ _id }, '_id author title body', { lean: true })
       ctx.body = Object.assign(post, {
         author: Object.assign(post.author, {
-          self: `${ domain() }/users/${ post.author._id }`
+          self: `${ baseUrl }/users/${ post.author._id }`
         }), 
-        self: `${ domain() }${ ctx.url }`
+        comments: `${ baseUrl }/comments/posts/${ post._id }`,
+        self: `${ baseUrl }${ ctx.url }`
       })
     } catch(e) {
       ctx.body = `Could not find a post with the id: { ${ _id } }`
@@ -69,9 +72,9 @@ router
       posts = await posts.map(post => {
         return Object.assign(post, {
           author: Object.assign(post.author, {
-            self: `${ domain() }/users/${ post.author._id }`
+            self: `${ baseUrl }/users/${ post.author._id }`
           }), 
-          self: `${ domain() }/posts/${ post._id }`
+          self: `${ baseUrl }/posts/${ post._id }`
         })
       })
 

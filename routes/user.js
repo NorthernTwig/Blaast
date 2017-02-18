@@ -3,8 +3,8 @@ import mongoose from 'mongoose'
 import { hash } from 'bcrypt-as-promised'
 import userSchema from '../models/schemas/UserSchema'
 import createUserCheck from './middlewares/createUser'
-import domain from '../utils/domain'
-import pagination from '../utils/pagination'
+import baseUrl from './libs/baseUrl'
+import pagination from './libs/pagination'
 const router = new Router()
 
 router
@@ -20,8 +20,8 @@ router
 
     users = await users.map(user => {
       return Object.assign(user, {
-        self: `${ domain() }${ path }/${ user._id }`,
-        posts: `${ domain() }/posts/users/${ user._id }`
+        self: `${ baseUrl }${ path }/${ user._id }`,
+        posts: `${ baseUrl }/posts/users/${ user._id }`
       })
     })
 
@@ -32,8 +32,9 @@ router
     const path = ctx.req._parsedUrl.pathname
     const user = await userSchema.findOne({_id}, 'id username name', { lean: true })
     Object.assign(user, {
-      self: `${ domain() }${ path }`,
-      posts: `${ domain() }/posts/users/${ user._id }`
+      self: `${ baseUrl }${ path }`,
+      posts: `${ baseUrl }/posts/users/${ user._id }`,
+      comments: `${ baseUrl }/comments/users/${ user._id }`
     })
 
     ctx.body = user
