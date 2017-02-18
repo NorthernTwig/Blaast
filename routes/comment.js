@@ -2,6 +2,7 @@ import Router from 'koa-router'
 import CommentSchema from '../models/schemas/CommentSchema'
 import jwt from './middlewares/jwt'
 import pagination from './libs/pagination'
+import generateSelf from './libs/generateSelf'
 import baseUrl from './libs/baseUrl'
 const router = new Router()
 
@@ -17,35 +18,15 @@ router
         .limit(limit)
         .skip(offset * limit)
 
-    comments = comments.map(comment => {
-      return Object.assign(comment, {
-        post: {
-          _id: comment.post,
-          self: `${ baseUrl }/posts/${ comment.post }`
-        },
-        author: Object.assign(comment.author, {
-          self: `${ baseUrl }/users/${ comment.author._id }`
-        }),
-        self: `${ baseUrl }${ ctx.url }`
-      })
-    })
+    comments = comments.map(comment => generateSelf(comment, ctx))
 
     ctx.body = pagination(comments, ctx.url, limit, offset, path)
   })
   .get('comments/:_id', async (ctx, next) => {
     const { _id } = ctx.params
     const comment = await CommentSchema.findOne({ _id }, '_id body author post date', { lean: true })
-    console.log('fek')
-    ctx.body = Object.assign(comment, {
-      post: {
-        _id: comment.post,
-        self: `${ baseUrl }/posts/${ comment.post }`
-      },
-      author: Object.assign(comment.author, {
-        self: `${ baseUrl }/users/${ comment.author._id }`
-      }),
-      self: `${ baseUrl }${ ctx.url }`
-    })
+
+    ctx.body = generateSelf(comment, ctx)
 
   })
   .get('comments/users/:_id', async (ctx, next) => {
@@ -56,20 +37,7 @@ router
     
     let comments = await CommentSchema.find({ 'author._id': _id  }, '_id body author post date', { lean: true })
 
-    comments.map(comment => {
-      return Object.assign(comment, {
-        post: {
-          _id: comment.post,
-          self: `${ baseUrl }/posts/${ comment.post }`
-        },
-        author: Object.assign(comment.author, {
-          self: `${ baseUrl }/users/${ comment.author._id }`
-        }),
-        self: `${ baseUrl }${ ctx.url }`
-      })
-    })
-
-    ctx.body = comments
+    ctx.body = comments.map(comment => generateSelf(comment, ctx))
   })
   .get('comments/posts/:_id', async (ctx, next) => {
     const limit = parseInt(ctx.query.limit) || 10
@@ -79,19 +47,7 @@ router
 
     let comments = await CommentSchema.find({ 'post': _id  }, '_id body author post date', { lean: true })
 
-    comments = comments.map(comment => {
-      return Object.assign(comment, {
-        post: {
-          _id: comment.post,
-          self: `${ baseUrl }/posts/${ comment.post }`
-        },
-        author: Object.assign(comment.author, {
-          self: `${ baseUrl }/users/${ comment.author._id }`
-        }),
-        self: `${ baseUrl }${ ctx.url }`
-      })
-    })
-
+    comments = comments.map(comment => generateSelf(comment, ctx))
     ctx.body = pagination(comments, ctx.url, limit, offset, path)
   })
   .post('comments', jwt, async (ctx, next) => {
