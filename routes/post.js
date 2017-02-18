@@ -18,13 +18,13 @@ router
     const path = ctx.req._parsedUrl.pathname
 
     try {
-      let posts = await PostSchema.find({}, '_id author title body', { lean: true })
+      const posts = await PostSchema.find({}, '_id author title body', { lean: true })
         .sort({ 'date': -1 })
         .limit(limit)
         .skip(offset * limit)
 
-      posts = posts.map(post => generateSelf(post, ctx))
-      ctx.body = pagination(posts, ctx.url, limit, offset, path)
+      const postsWithSelf = posts.map(post => generateSelf(post, ctx))
+      ctx.body = pagination(postsWithSelf, ctx.url, limit, offset, path)
     } catch(e) {
       ctx.body = 'Could not display any posts' + e
     }
@@ -46,7 +46,7 @@ router
     const path = ctx.req._parsedUrl.pathname
 
     try {
-      let posts = await PostSchema.find({ 'author._id': _id }, 'title body author', { lean: true })
+      const posts = await PostSchema.find({ 'author._id': _id }, 'title body author', { lean: true })
         .sort({ 'date': -1 })
         .limit(limit)
         .skip(offset * limit)
@@ -55,9 +55,9 @@ router
         throw new Error('No posts from this user found.')
       }
 
-      posts = posts.map(post => generateSelf(post, ctx))
+      const postsWithSelf = posts.map(post => generateSelf(post, ctx))
 
-      ctx.body = pagination(posts, ctx.url, limit, offset, path)
+      ctx.body = pagination(postsWithSelf, ctx.url, limit, offset, path)
     } catch(e) {
       ctx.body = e.message
     }

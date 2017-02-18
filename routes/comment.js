@@ -13,20 +13,27 @@ router
     const offset = parseInt(ctx.query.offset) || 0
     const path = ctx.req._parsedUrl.pathname
     
-    let comments = await CommentSchema.find({}, '_id body author post date', { lean: true })
-        .sort({ 'date': -1 })
-        .limit(limit)
-        .skip(offset * limit)
+    try {
+      let comments = await CommentSchema.find({}, '_id body author post date', { lean: true })
+          .sort({ 'date': -1 })
+          .limit(limit)
+          .skip(offset * limit)
 
-    comments = comments.map(comment => generateSelf(comment, ctx))
-    ctx.body = pagination(comments, ctx.url, limit, offset, path)
+      comments = comments.map(comment => generateSelf(comment, ctx))
+      ctx.body = pagination(comments, ctx.url, limit, offset, path)
+    } catch(e) {
+      ctx.body = 'Could not GET any comments'
+    }
   })
   .get('comments/:_id', async (ctx, next) => {
     const { _id } = ctx.params
-    const comment = await CommentSchema.findOne({ _id }, '_id body author post date', { lean: true })
 
-    ctx.body = generateSelf(comment, ctx)
-
+    try {
+      const comment = await CommentSchema.findOne({ _id }, '_id body author post date', { lean: true })
+      ctx.body = generateSelf(comment, ctx)
+    } catch(e) {
+      ctx.body = 'Could not GET the comment'
+    }
   })
   .get('comments/users/:_id', async (ctx, next) => {
     const limit = parseInt(ctx.query.limit) || 10
@@ -34,9 +41,13 @@ router
     const path = ctx.req._parsedUrl.pathname
     const { _id } = ctx.params
     
-    let comments = await CommentSchema.find({ 'author._id': _id  }, '_id body author post date', { lean: true })
+    try {
+      const comments = await CommentSchema.find({ 'author._id': _id  }, '_id body author post date', { lean: true })
+      ctx.body = comments.map(comment => generateSelf(comment, ctx))
+    } catch(e) {
+      ctx.body = 'Could not GET that users comments'
+    }
 
-    ctx.body = comments.map(comment => generateSelf(comment, ctx))
   })
   .get('comments/posts/:_id', async (ctx, next) => {
     const limit = parseInt(ctx.query.limit) || 10
@@ -44,10 +55,13 @@ router
     const path = ctx.req._parsedUrl.pathname
     const { _id } = ctx.params
 
-    let comments = await CommentSchema.find({ 'post': _id  }, '_id body author post date', { lean: true })
-
-    comments = comments.map(comment => generateSelf(comment, ctx))
-    ctx.body = pagination(comments, ctx.url, limit, offset, path)
+    try {
+      const comments = await CommentSchema.find({ 'post': _id  }, '_id body author post date', { lean: true })
+      const commentsWithSelf = comments.map(comment => generateSelf(comment, ctx))
+      ctx.body = pagination(commentsWithSelf, ctx.url, limit, offset, path)
+    } catch(e) {
+      ctx.body = 'Could not GET that posts comments'
+    }
   })
   .post('comments', jwt, async (ctx, next) => {
     const { body, post } = ctx.request.body
@@ -66,7 +80,7 @@ router
       ctx.status = 201
       ctx.body = `Comment has been created`
     } catch (e) {
-      ctx.body = `An error occured. ${e}`
+      ctx.body = 'Could not POST that comment'
     }
   })
 

@@ -5,7 +5,6 @@ import credentialCheck from './middlewares/credentialCheck'
 import userSchema from '../models/schemas/UserSchema'
 import Router from 'koa-router'
 import jwt from 'jsonwebtoken'
-
 const router = new Router()
 
 router
@@ -15,14 +14,10 @@ router
     try {
       const user = await userSchema.findOne({username})
       const correctPassword = await compare(password, user.password)
-      if (correctPassword) {
-        ctx.status = 200
-        ctx.body = {
-          token: jwt.sign({ name: username, _id: user._id }, process.env.PUBLIC_SECRET),
-          message: 'Logged in'
-        }
-      } else {
-        throw new Error('{ password } and { username } did not match')
+      ctx.status = 200
+      ctx.body = {
+        token: jwt.sign({ name: username, _id: user._id }, process.env.PUBLIC_SECRET),
+        message: 'Logged in'
       }
     } catch(e) {
       ctx.body = e

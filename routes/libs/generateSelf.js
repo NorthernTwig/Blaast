@@ -1,6 +1,7 @@
 import baseUrl from './baseUrl'
 
 export const comments = (comment, ctx) => {
+  const path = ctx.req._parsedUrl.pathname
   return Object.assign({}, comment, {
     post: {
       _id: comment.post,
@@ -9,7 +10,7 @@ export const comments = (comment, ctx) => {
     author: Object.assign({}, comment.author, {
       self: `${ baseUrl }/users/${ comment.author._id }`
     }),
-    self: `${ baseUrl }${ ctx.url }`
+    self: `${ baseUrl }/comments/${comment._id}`
   })
 }
 
@@ -20,7 +21,7 @@ export const posts = (post, ctx) => {
     author: Object.assign({}, post.author, {
       self: `${ baseUrl }/users/${ post.author._id }`
     }), 
-    comments: `${ baseUrl }/comments/posts/${ post.author._id }`,
+    comments: `${ baseUrl }/comments/posts/${ post._id }`,
     self: `${ baseUrl }${ path }/${ post._id }`
   })
 }
