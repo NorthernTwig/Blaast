@@ -2,7 +2,7 @@ import Router from 'koa-router'
 import CommentSchema from '../models/schemas/CommentSchema'
 import jwt from './middlewares/jwt'
 import pagination from './libs/pagination'
-import generateSelf from './libs/generateSelf'
+import { comments as generateSelf } from './libs/generateSelf'
 import baseUrl from './libs/baseUrl'
 const router = new Router()
 
@@ -19,7 +19,6 @@ router
         .skip(offset * limit)
 
     comments = comments.map(comment => generateSelf(comment, ctx))
-
     ctx.body = pagination(comments, ctx.url, limit, offset, path)
   })
   .get('comments/:_id', async (ctx, next) => {

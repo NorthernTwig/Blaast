@@ -1,6 +1,6 @@
 import baseUrl from './baseUrl'
 
-export default (comment, ctx) => {
+export const comments = (comment, ctx) => {
   return Object.assign(comment, {
     post: {
       _id: comment.post,
@@ -10,5 +10,15 @@ export default (comment, ctx) => {
       self: `${ baseUrl }/users/${ comment.author._id }`
     }),
     self: `${ baseUrl }${ ctx.url }`
+  })
+}
+
+export const posts = (post, ctx) => {
+  return Object.assign(post, {
+    author: Object.assign(post.author, {
+      self: `${ baseUrl }/users/${ post.author._id }`
+    }), 
+    comments: `${ baseUrl }/comments/posts/${ post.author._id }`,
+    self: `${ baseUrl }${ path }/${ post._id }`
   })
 }

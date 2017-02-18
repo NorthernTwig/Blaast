@@ -2,6 +2,7 @@ import Router from 'koa-router'
 import PostSchema from '../models/schemas/PostSchema'
 import baseUrl from './libs/baseUrl'
 import pagination from './libs/pagination'
+import { posts as generateSelf } from './libs/generateSelf'
 import createPostCheck from './middlewares/createPost'
 import deletePostCheck from './middlewares/deletePost'
 import updatePostCheck from './middlewares/updatePost'
@@ -22,16 +23,7 @@ router
         .limit(limit)
         .skip(offset * limit)
 
-      posts = await posts.map(post => {
-        return Object.assign(post, {
-          author: Object.assign(post.author, {
-            self: `${ baseUrl }/users/${ post.author._id }`
-          }), 
-          comments: `${ baseUrl }/comments/posts/${ post.author._id }`,
-          self: `${ baseUrl }${ path }/${ post._id }`
-        })
-      })
-
+      posts = posts.map(post => generateSelf(post, ctx))
       ctx.body = pagination(posts, ctx.url, limit, offset, path)
     } catch(e) {
       ctx.body = 'Could not display any posts' + e
@@ -42,13 +34,7 @@ router
     
     try {
       const post = await PostSchema.findOne({ _id }, '_id author title body', { lean: true })
-      ctx.body = Object.assign(post, {
-        author: Object.assign(post.author, {
-          self: `${ baseUrl }/users/${ post.author._id }`
-        }), 
-        comments: `${ baseUrl }/comments/posts/${ post._id }`,
-        self: `${ baseUrl }${ ctx.url }`
-      })
+      ctx.body = generateSelf(post, ctx)
     } catch(e) {
       ctx.body = `Could not find a post with the id: { ${ _id } }`
     }
@@ -69,14 +55,7 @@ router
         throw new Error('No posts from this user found.')
       }
 
-      posts = await posts.map(post => {
-        return Object.assign(post, {
-          author: Object.assign(post.author, {
-            self: `${ baseUrl }/users/${ post.author._id }`
-          }), 
-          self: `${ baseUrl }/posts/${ post._id }`
-        })
-      })
+      posts = posts.map(post => generateSelf(post, ctx))
 
       ctx.body = pagination(posts, ctx.url, limit, offset, path)
     } catch(e) {
