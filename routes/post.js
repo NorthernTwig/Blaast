@@ -2,6 +2,7 @@ import Router from 'koa-router'
 import PostSchema from '../models/schemas/PostSchema'
 import baseUrl from './libs/baseUrl'
 import pagination from './libs/pagination'
+import emitter from './libs/eventBus'
 import { posts as generateSelf } from './libs/generateSelf'
 import createPostCheck from './middlewares/createPost'
 import deletePostCheck from './middlewares/deletePost'
@@ -79,6 +80,7 @@ router
 
       ctx.status = 201
       ctx.body = `The post "${ title }" has been created`
+      emitter.emit('post', newPost)
     } catch(e) {
       ctx.body = 'An error occured'
     }

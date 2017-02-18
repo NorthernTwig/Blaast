@@ -2,6 +2,7 @@ import Router from 'koa-router'
 import CommentSchema from '../models/schemas/CommentSchema'
 import jwt from './middlewares/jwt'
 import pagination from './libs/pagination'
+import emitter from './libs/eventBus'
 import { comments as generateSelf } from './libs/generateSelf'
 import baseUrl from './libs/baseUrl'
 const router = new Router()
@@ -79,6 +80,7 @@ router
 
       ctx.status = 201
       ctx.body = `Comment has been created`
+      emitter.emit('comment', newComment)
     } catch (e) {
       ctx.body = 'Could not POST that comment'
     }

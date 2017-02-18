@@ -5,6 +5,7 @@ import userSchema from '../models/schemas/UserSchema'
 import createUserCheck from './middlewares/createUser'
 import webhookCheck from './middlewares/webhookCheck'
 import baseUrl from './libs/baseUrl'
+import emitter from './libs/eventBus'
 import jwt from './middlewares/jwt'
 import pagination from './libs/pagination'
 import { users as generateSelf } from './libs/generateSelf'
@@ -17,7 +18,7 @@ router
     const path = ctx.req._parsedUrl.pathname
 
     try {
-      const users = await userSchema.find({}, 'id username name webhook', { lean: true }) 
+      const users = await userSchema.find({}, 'id username name', { lean: true }) 
           .sort({ 'date': -1 })
           .limit(limit)
           .skip(offset * limit)
@@ -53,6 +54,7 @@ router
         name
       })
       ctx.body = `The user "${username}" has been created`
+      emitter.emit('user', { username, name })
     } catch(e) {
       ctx.body = 'An error occured' + e
     }
