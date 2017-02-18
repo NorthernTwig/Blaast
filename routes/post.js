@@ -27,7 +27,8 @@ router
       const postsWithSelf = posts.map(post => generateSelf(post, ctx))
       ctx.body = pagination(postsWithSelf, ctx.url, limit, offset, path)
     } catch(e) {
-      ctx.body = 'Could not display any posts' + e
+      ctx.status = 500
+      ctx.body = 'Could not GET an posts'
     }
   })
   .get('posts/:_id', async (ctx, next) => {
@@ -37,7 +38,8 @@ router
       const post = await PostSchema.findOne({ _id }, '_id author title body date', { lean: true })
       ctx.body = generateSelf(post, ctx)
     } catch(e) {
-      ctx.body = `Could not find a post with the id: { ${ _id } }`
+      ctx.status = 404
+      next('Could not get ')
     }
   })
   .get('posts/users/:_id', async (ctx, next) => {
@@ -60,7 +62,8 @@ router
 
       ctx.body = pagination(postsWithSelf, ctx.url, limit, offset, path)
     } catch(e) {
-      ctx.body = e.message
+      ctx.status = 404
+      ctx.body = e.message || 'Could not GET any posts by user'
     }
     
   })
@@ -82,7 +85,8 @@ router
       ctx.body = `The post "${ title }" has been created`
       emitter.emit('post', newPost)
     } catch(e) {
-      ctx.body = 'An error occured'
+      ctx.status = 
+      next()
     }
   })
   .delete('posts/:_id', deletePostCheck, jwt, async (ctx, next) => {
