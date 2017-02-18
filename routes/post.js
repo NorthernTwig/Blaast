@@ -5,6 +5,7 @@ import pagination from '../utils/pagination'
 import createPostCheck from './middlewares/createPost'
 import deletePostCheck from './middlewares/deletePost'
 import updatePostCheck from './middlewares/updatePost'
+import userOwnsCheck from './middlewares/userOwns'
 import jwt from './middlewares/jwt'
 const router = new Router()
 
@@ -99,24 +100,36 @@ router
       ctx.body = 'An error occured'
     }
   })
-  .delete('posts/:_id', deletePostCheck, async (ctx, next) => {
+  .delete('posts/:_id', deletePostCheck, jwt, async (ctx, next) => {
     const { _id } = ctx.params
-
+    const authorId = ctx.state.user._id
+    
     try {
-      await PostSchema.findOneAndRemove({ _id })
+      const deletedPost = await PostSchema.findOneAndRemove({ _id, 'author._id': authorId })
+
+      if (deletedPost === null) {
+        return ctx.body = 'You do not own this post.'
+      }
+
       ctx.body = 'Post was successfully deleted.'
     } catch(e) {
-      ctx.body = `Post with id: { ${ _id } } could not be deleted.`
+      ctx.body = `Post with id: { ${ _id } } could not be deleted. ${e}`
     }
   })
-  .put('posts/:_id', updatePostCheck, async (ctx, next) => {
+  .put('posts/:_id', updatePostCheck, jwt, async (ctx, next) => {
     const { _id } = ctx.params
+    const authorId = ctx.state.user._id
 
     try {
-      await PostSchema.findOneAndUpdate({ _id }, ctx.request.body)
+      const updatedPost = await PostSchema.findOneAndUpdate({ _id, 'author._id': authorId }, ctx.request.body)
+
+      if (updatedPost === null) {
+        return ctx.body = 'You do not own this post.'
+      }
+
       ctx.body = 'Post was successfully updated'
     } catch(e) {
-      ctx.body = 'Could not update post'
+      ctx.body = 'Could not update post' + e
     }
   })
   
