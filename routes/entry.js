@@ -4,7 +4,7 @@ const router = new Router()
 
 router
   .get('/', async (ctx, next) => {
-    if (ctx.status !== 200 ) {
+    if (ctx.request.url !== '/') {
       return next()
     }
     ctx.body = {

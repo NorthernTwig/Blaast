@@ -19,15 +19,19 @@ app.use(cors())
 app.use(bodyParser())
 app.use(json())
 
+router.get('/favicon.ico', async (ctx, next) => {
+  ctx.status = 204
+})
+
 router.use(login.routes())
 router.use(comment.routes())
 router.use(post.routes())
 router.use(user.routes())
 router.use(entry.routes())
-router.use(error.routes())
 
 app.use(router.routes())
 app.use(router.allowedMethods())
+router.use(error.routes())
 
 app.listen(PORT, () => {
   console.log(`Listening on ${PORT}`)
