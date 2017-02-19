@@ -26,7 +26,7 @@ router
 
       ctx.body = pagination(usersWithSelf, ctx.url, limit, offset, path)
     } catch(e) {
-      await next()
+      ctx.throw(e.message, e.status)
     }
 
   })
@@ -38,7 +38,7 @@ router
       const user = await userSchema.findOne({_id}, 'id username name', { lean: true })
       ctx.body = generateSelf(user, ctx)
     } catch(e) {
-      await next()
+      ct.throw('Could not find a user with that id', 404)
     }
     
   })
@@ -56,10 +56,12 @@ router
       ctx.body = `The user "${username}" has been created`
       emitter.emit('user', { username, name })
     } catch(e) {
-      await next()
+      ctx.throw('Could not create a user with those credentials', 400)
     }
   })
   .patch('users/webhook', webhookCheck, jwt, async (ctx, next) => {
+
+    //TODO: Make webhook its own route
     const { _id } = ctx.state.user
     const { endpoint, scope } = ctx.request.body
 
@@ -70,9 +72,10 @@ router
 
     try {
       const userWithWebhook = await userSchema.findOneAndUpdate({ _id }, { webhook })
+      ctx.status = 200
       ctx.body = 'Webhook successfully registered'
     } catch(e) {
-      await next()
+      ctx.throw('Could not register webhook', 400)
     }
   })
 

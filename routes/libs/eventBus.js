@@ -2,6 +2,9 @@ import { EventEmitter } from 'events'
 import rp from 'request-promise'
 import userSchema from '../../models/UserSchema'
 
+// TODO: Revamp this - DRY
+// TODO: Ping(?) 
+
 const emitter = new EventEmitter()
 
 emitter.on('post', data => {
@@ -33,7 +36,7 @@ const sendToSubscribers = async (emit, data) => {
     })
       
   } catch(e) {
-    console.log(e)
+    return
   }
 }
 

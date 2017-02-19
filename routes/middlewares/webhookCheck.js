@@ -6,7 +6,7 @@ export default async (ctx, next) => {
   }
 
   if (endpoint === undefined && scope === undefined) {
-    ctx.documentation = {
+    ctx.data = {
       endpoint: 'http://someroute.com', 
       scope: 'push comments posts users (seperate scopes with space)'
     }

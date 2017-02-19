@@ -20,7 +20,7 @@ router
         message: 'Logged in'
       }
     } catch(e) {
-      await next()
+      ctx.throw('A user with the entered credentials could not be found', 403)
     }
   })
 

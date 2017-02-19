@@ -7,7 +7,6 @@ import { posts as generateSelf } from './libs/generateSelf'
 import createPostCheck from './middlewares/createPost'
 import deletePostCheck from './middlewares/deletePost'
 import updatePostCheck from './middlewares/updatePost'
-import userOwnsCheck from './middlewares/userOwns'
 import jwt from './middlewares/jwt'
 const router = new Router()
 
@@ -27,7 +26,7 @@ router
       const postsWithSelf = posts.map(post => generateSelf(post, ctx))
       ctx.body = pagination(postsWithSelf, ctx.url, limit, offset, path)
     } catch(e) {
-      await next()
+      ctx.throw(e.message, e.status)
     }
   })
   .get('posts/:_id', async (ctx, next) => {
@@ -38,7 +37,7 @@ router
       const post = await PostSchema.findOne({ _id }, '_id author title body date', { lean: true })
       ctx.body = generateSelf(post, ctx)
     } catch(e) {
-      await next()
+      ctx.throw('Could not find a post with that id', 404)
     }
   })
   .get('posts/users/:_id', async (ctx, next) => {
@@ -54,14 +53,14 @@ router
         .skip(offset * limit)
       
       if (posts.length <= 0) {
-        throw new Error('No posts from this user found.')
+        ctx.thorw('That user has no posts', 404)
       }
 
       const postsWithSelf = posts.map(post => generateSelf(post, ctx))
 
       ctx.body = pagination(postsWithSelf, ctx.url, limit, offset, path)
     } catch(e) {
-      await next()
+      ctx.throw('Could not find posts by user with that id', 404)
     }
     
   })
@@ -82,7 +81,7 @@ router
       ctx.body = `The post "${ title }" has been created`
       emitter.emit('post', newPost)
     } catch(e) {
-      await next()
+      ctx.throw('Could not create post', 400)
     }
   })
   .delete('posts/:_id', deletePostCheck, jwt, async (ctx, next) => {
@@ -96,13 +95,13 @@ router
         return ctx.body = 'You do not own this post.'
       }
 
+      ctx.status = 204
       ctx.body = 'Post was successfully deleted.'
     } catch(e) {
-      ctx.documentation = e
-      await next()
+      ctx.throw('Could not delete post', 400)
     }
   })
-  .put('posts/:_id', updatePostCheck, jwt, async (ctx, next) => {
+  .patch('posts/:_id', updatePostCheck, jwt, async (ctx, next) => {
     const { _id } = ctx.params
     const authorId = ctx.state.user._id
 
@@ -110,12 +109,12 @@ router
       const updatedPost = await PostSchema.findOneAndUpdate({ _id, 'author._id': authorId }, ctx.request.body)
 
       if (updatedPost === null) {
-        return ctx.body = 'You do not own this post.'
+        ctx.throw('You do not own this post', 403)
       }
 
       ctx.body = 'Post was successfully updated'
     } catch(e) {
-      await next()
+      ctx.throw('Could not update post with that Id', 400)
     }
   })
   

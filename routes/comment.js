@@ -1,6 +1,7 @@
 import Router from 'koa-router'
 import CommentSchema from '../models/CommentSchema'
 import jwt from './middlewares/jwt'
+import commentCheck from './middlewares/commentCheck'
 import pagination from './libs/pagination'
 import emitter from './libs/eventBus'
 import { comments as generateSelf } from './libs/generateSelf'
@@ -64,7 +65,7 @@ router
       ctx.throw('Could not find comments on post with that id', 404)
     }
   })
-  .post('comments/posts/:post', jwt, async (ctx, next) => {
+  .post('comments/posts/:post', jwt, commentCheck, async (ctx, next) => {
     const { post } = ctx.params
     const { body } = ctx.request.body
     const { name, _id } = ctx.state.user
@@ -83,12 +84,7 @@ router
       ctx.body = `Comment has been created`
       emitter.emit('comment', newComment)
     } catch (e) {
-      ctx.data = {
-        body: {
-
-        }
-      }
-      ctx.throw('Could not create comment', 400)
+      ctx.throw('Could not create comment on post with that Id', 400)
     }
   })
 

@@ -4,9 +4,6 @@ const router = new Router()
 
 router
   .get('/', async (ctx, next) => {
-    if (ctx.request.url !== '/') {
-      return next()
-    }
     ctx.body = {
       users: `${baseUrl}/users`,
       posts: `${baseUrl}/posts`,
