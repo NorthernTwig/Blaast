@@ -5,10 +5,11 @@ export default async (ctx, next) => {
     password
   }
   if (Object.values(newUserObject).includes(undefined)) {
-    return ctx.body = {
-      status: ctx.status,
-      error: 'Data is missing from POST. { username }, { password } is missing.'
+    ctx.data = {
+      username: 'ex. OrangeSoda',
+      password: 'ex. ex. 1-too-cucumberish-4_'
     }
+    ctx.throw('The username or password is missing', 400)
   }
   await next()
 }

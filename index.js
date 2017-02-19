@@ -5,16 +5,18 @@ import json from 'koa-json'
 import bodyParser from 'koa-bodyparser'
 import cors from 'koa-cors'
 import db from './utils/mongo'
+import errorHandler from './utils/errorHandler'
 import login from './routes/login'
 import entry from './routes/entry'
 import user from './routes/user'
 import post from './routes/post'
 import comment from './routes/comment'
-import error from './routes/error'
 
 const app = new Koa()
 const router = new Router()
 const PORT = 3000
+
+app.use(errorHandler)
 app.use(cors())
 app.use(bodyParser())
 app.use(json())
@@ -31,7 +33,7 @@ router.use(entry.routes())
 
 app.use(router.routes())
 app.use(router.allowedMethods())
-router.use(error.routes())
+
 
 app.listen(PORT, () => {
   console.log(`Listening on ${PORT}`)

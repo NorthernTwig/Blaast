@@ -8,17 +8,15 @@ export default async (ctx, next) => {
   }
 
   if (_id === undefined) {
-    return ctx.body = {
-      status: ctx.status,
-      error: 'Data is missing from PUT. { title }, { body } or { _id } is missing.'
-    }
+    ctx.throw('The parameter _id is missing', 422)
   }
 
   if (title === undefined && body === undefined) {
-    return ctx.body = {
-      status: ctx.status,
-      error: 'Data is missing from PUT. { title } or { body } is missing.'
+    ctx.data = {
+      title: 'ex. How to make an REST api',
+      body: 'ex. Your start of with..'
     }
+    ctx.throw('The title or body is missing. One of them is needed.', 400)
   }
 
   await next()

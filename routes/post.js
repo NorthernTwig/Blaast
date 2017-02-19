@@ -27,19 +27,18 @@ router
       const postsWithSelf = posts.map(post => generateSelf(post, ctx))
       ctx.body = pagination(postsWithSelf, ctx.url, limit, offset, path)
     } catch(e) {
-      ctx.status = 500
-      ctx.body = 'Could not GET an posts'
+      await next()
     }
   })
   .get('posts/:_id', async (ctx, next) => {
     const { _id } = ctx.params
+    const path = ctx.req._parsedUrl.pathname
     
     try {
       const post = await PostSchema.findOne({ _id }, '_id author title body date', { lean: true })
       ctx.body = generateSelf(post, ctx)
     } catch(e) {
-      ctx.status = 404
-      next('Could not get ')
+      await next()
     }
   })
   .get('posts/users/:_id', async (ctx, next) => {
@@ -62,8 +61,7 @@ router
 
       ctx.body = pagination(postsWithSelf, ctx.url, limit, offset, path)
     } catch(e) {
-      ctx.status = 404
-      ctx.body = e.message || 'Could not GET any posts by user'
+      await next()
     }
     
   })
@@ -80,13 +78,11 @@ router
           name
         }
       })
-
       ctx.status = 201
       ctx.body = `The post "${ title }" has been created`
       emitter.emit('post', newPost)
     } catch(e) {
-      ctx.status = 
-      next()
+      await next()
     }
   })
   .delete('posts/:_id', deletePostCheck, jwt, async (ctx, next) => {
@@ -102,7 +98,8 @@ router
 
       ctx.body = 'Post was successfully deleted.'
     } catch(e) {
-      ctx.body = `Post with id: { ${ _id } } could not be deleted. ${e}`
+      ctx.documentation = e
+      await next()
     }
   })
   .put('posts/:_id', updatePostCheck, jwt, async (ctx, next) => {
@@ -118,7 +115,7 @@ router
 
       ctx.body = 'Post was successfully updated'
     } catch(e) {
-      ctx.body = 'Could not update post' + e
+      await next()
     }
   })
   

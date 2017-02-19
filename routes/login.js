@@ -20,7 +20,7 @@ router
         message: 'Logged in'
       }
     } catch(e) {
-      ctx.body = e
+      await next()
     }
   })
 

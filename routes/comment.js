@@ -23,7 +23,7 @@ router
       comments = comments.map(comment => generateSelf(comment, ctx))
       ctx.body = pagination(comments, ctx.url, limit, offset, path)
     } catch(e) {
-      ctx.body = 'Could not GET any comments'
+      ctx.throw(e.message, e.status)
     }
   })
   .get('comments/:_id', async (ctx, next) => {
@@ -33,7 +33,7 @@ router
       const comment = await CommentSchema.findOne({ _id }, '_id body author post date', { lean: true })
       ctx.body = generateSelf(comment, ctx)
     } catch(e) {
-      ctx.body = 'Could not GET the comment'
+      ctx.throw('Could not find a comment with that id', 404)
     }
   })
   .get('comments/users/:_id', async (ctx, next) => {
@@ -46,7 +46,7 @@ router
       const comments = await CommentSchema.find({ 'author._id': _id  }, '_id body author post date', { lean: true })
       ctx.body = comments.map(comment => generateSelf(comment, ctx))
     } catch(e) {
-      ctx.body = 'Could not GET that users comments'
+      ctx.throw('Could not find comments by user with that id', 404)
     }
 
   })
@@ -61,11 +61,12 @@ router
       const commentsWithSelf = comments.map(comment => generateSelf(comment, ctx))
       ctx.body = pagination(commentsWithSelf, ctx.url, limit, offset, path)
     } catch(e) {
-      ctx.body = 'Could not GET that posts comments'
+      ctx.throw('Could not find comments on post with that id', 404)
     }
   })
-  .post('comments', jwt, async (ctx, next) => {
-    const { body, post } = ctx.request.body
+  .post('comments/posts/:post', jwt, async (ctx, next) => {
+    const { post } = ctx.params
+    const { body } = ctx.request.body
     const { name, _id } = ctx.state.user
 
     try {
@@ -82,7 +83,12 @@ router
       ctx.body = `Comment has been created`
       emitter.emit('comment', newComment)
     } catch (e) {
-      ctx.body = 'Could not POST that comment'
+      ctx.data = {
+        body: {
+
+        }
+      }
+      ctx.throw('Could not create comment', 400)
     }
   })
 
