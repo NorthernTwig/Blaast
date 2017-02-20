@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events'
 import rp from 'request-promise'
-import userSchema from '../../models/UserSchema'
+import WebhookSchema from '../../models/WebhookSchema'
 
 // TODO: Revamp this - DRY
 // TODO: Ping(?) 
@@ -21,12 +21,11 @@ emitter.on('user', data => {
 
 const sendToSubscribers = async (emit, data) => {
   try {
-    const users = await userSchema.find({}, 'webhook', { lean: true })
-    const eventSubscribers = users.filter(user => user.webhook.scope.includes(emit) || user.webhook.scope.includes('push'))
-
+    const webhooks = await WebhookSchema.find({}, 'endpoint scope', { lean: true })
+    const eventSubscribers = webhooks.filter(webhook => webhook.scope.includes(emit) || webhook.scope.includes('push'))
     eventSubscribers.forEach(subscriber => {
       rp({
-        uri: subscriber.webhook.endpoint,
+        uri: subscriber.endpoint,
         method: 'POST',
         headers:  { 'Content-Type': 'application/json' },
         body: data,
@@ -36,6 +35,7 @@ const sendToSubscribers = async (emit, data) => {
     })
       
   } catch(e) {
+    console.log(e)
     return
   }
 }

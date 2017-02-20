@@ -1,33 +1,70 @@
 import Router from 'koa-router'
 import WebhookSchema from '../models/WebhookSchema'
+import jwt from './middlewares/jwt'
+import webhookCheck from './middlewares/webhookCheck'
+import { webhooks as generateSelf } from './libs/generateSelf'
+import pagination from './libs/pagination'
 const router = Router()
 
 router
-  .get('webhook', jwt, async (ctx, next) => {
+  .get('webhooks', jwt, async (ctx, next) => {
+    const limit = parseInt(ctx.query.limit) || 10
+    const offset = parseInt(ctx.query.offset) || 0
+    const path = ctx.req._parsedUrl.pathname
     const { _id } = ctx.state.user
 
     try {
-      const webhook = await WebhookSchema.find({ownerId: _id})
-      ctx.body = webhook
+      const webhooks = await WebhookSchema.find({ownerId: _id}, '_id ownerId endpoint scope', { lean: true })
+        .sort({ 'date': -1 })
+        .limit(limit)
+        .skip(offset * limit)
+
+      const webhooksWithSelf = webhooks.map(webhook => generateSelf(webhook, ctx))
+      ctx.body = pagination(webhooksWithSelf, ctx.url, limit, offset, path)
     } catch(e) {
       ctx.throw('Could not find any webhooks owned by you', 404)
     }
   })
-  .post('webhook', webhookCheck, jwt, async (ctx, next) => {
-
-    const { _id } = ctx.state.user
-    const { endpoint, scope } = ctx.request.body
-
-    const webhook = {
-      endpoint,
-      scope: scope.trim().split(' ')
-    }
+  .get('webhooks/:_id', jwt, async (ctx, next) => {
+    const { _id } = ctx.params
+    const ownerId = ctx.state.user._id
 
     try {
-      const userWithWebhook = await userSchema.findOneAndUpdate({ _id }, { webhook })
-      ctx.status = 200
+      const webhook = await WebhookSchema.findOne({ownerId, _id}, '_id ownerId endpoint scope', { lean: true })
+      ctx.body = generateSelf(webhook, ctx)
+    } catch(e) {
+      ctx.throw('Could not find a webhook owned by you with that id', 404)
+    }
+  })
+  .post('webhooks', webhookCheck, jwt, async (ctx, next) => {
+    const { _id } = ctx.state.user
+    const { endpoint, scope, secret } = ctx.request.body
+
+    try {
+      await WebhookSchema.create({
+        ownerId: _id,
+        endpoint,
+        scope: scope.trim().split(' '),
+        secret
+      })
+      ctx.status = 201
       ctx.body = 'Webhook successfully registered'
     } catch(e) {
       ctx.throw('Could not register webhook', 400)
     }
   })
+  .patch('webhooks/:_id', jwt, async (ctx, next) => {
+    const { ownerId } = ctx.state.user
+    const { _id } = ctx.params.body
+
+    try {
+
+    } catch(e) {
+
+    }
+  })
+  .delete('webhooks', jwt, async (ctx, next) => {
+
+  })
+
+  export default router

@@ -3,7 +3,6 @@ import mongoose from 'mongoose'
 import { hash } from 'bcrypt-as-promised'
 import userSchema from '../models/UserSchema'
 import createUserCheck from './middlewares/createUser'
-import webhookCheck from './middlewares/webhookCheck'
 import baseUrl from './libs/baseUrl'
 import emitter from './libs/eventBus'
 import jwt from './middlewares/jwt'
@@ -59,24 +58,6 @@ router
       ctx.throw('Could not create a user with those credentials', 400)
     }
   })
-  .patch('users/webhook', webhookCheck, jwt, async (ctx, next) => {
 
-    //TODO: Make webhook its own route
-    const { _id } = ctx.state.user
-    const { endpoint, scope } = ctx.request.body
-
-    const webhook = {
-      endpoint,
-      scope: scope.trim().split(' ')
-    }
-
-    try {
-      const userWithWebhook = await userSchema.findOneAndUpdate({ _id }, { webhook })
-      ctx.status = 200
-      ctx.body = 'Webhook successfully registered'
-    } catch(e) {
-      ctx.throw('Could not register webhook', 400)
-    }
-  })
 
 export default router

@@ -1,14 +1,11 @@
 export default async (ctx, next) => {
   const { endpoint, scope } = ctx.request.body
-  const newPostObject = {
-    endpoint,
-    scope,
-  }
 
   if (endpoint === undefined && scope === undefined) {
     ctx.data = {
-      endpoint: 'http://someroute.com', 
-      scope: 'push comments posts users (seperate scopes with space)'
+      endpoint: 'ex. http://someroute.com', 
+      scope: 'push comments posts users (seperate scopes with space)',
+      secret: '(optional) ex. MonkeyBars'
     }
     ctx.throw('The endpoint or scope is missing', 400)
   }

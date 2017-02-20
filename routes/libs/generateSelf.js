@@ -31,8 +31,16 @@ export const users = (user, ctx) => {
   const path = ctx.req._parsedUrl.pathname
 
   return Object.assign({}, user, {
-    self: `${ baseUrl }${ path }`,
+    self: `${ baseUrl }/users/${ user._id }`,
     posts: `${ baseUrl }/posts/users/${ user._id }`,
     comments: `${ baseUrl }/comments/users/${ user._id }`
+  })
+}
+
+export const webhooks = (webhook, ctx) => {
+  const path = ctx.req._parsedUrl.pathname
+
+  return Object.assign({}, webhook, {
+    self: `${ baseUrl }/webhooks/${ webhook._id }`
   })
 }

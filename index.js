@@ -10,6 +10,7 @@ import login from './routes/login'
 import entry from './routes/entry'
 import user from './routes/user'
 import post from './routes/post'
+import webhook from './routes/webhook'
 import comment from './routes/comment'
 
 const app = new Koa()
@@ -26,6 +27,7 @@ router.get('/favicon.ico', async (ctx, next) => {
 })
 
 router.use(login.routes())
+router.use(webhook.routes())
 router.use(comment.routes())
 router.use(post.routes())
 router.use(user.routes())

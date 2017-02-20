@@ -31,7 +31,6 @@ router
   })
   .get('posts/:_id', async (ctx, next) => {
     const { _id } = ctx.params
-    const path = ctx.req._parsedUrl.pathname
     
     try {
       const post = await PostSchema.findOne({ _id }, '_id author title body date', { lean: true })
