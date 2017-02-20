@@ -94,7 +94,7 @@ router
         ctx.throw(403)
       }
 
-      ctx.body = 'Post was successfully updated'
+      ctx.status = 204
     } catch(e) {
       ctx.throw('Could not update post with that id', e.status)
     }
@@ -107,12 +107,12 @@ router
       const deletedPost = await PostSchema.findOneAndRemove({ _id, 'author._id': authorId })
 
       if (deletedPost === null) {
-        return ctx.body = 'You do not own this post.'
+        ctx.throw(403)
       }
 
       ctx.status = 204
     } catch(e) {
-      ctx.throw('Could not delete post', 400)
+      ctx.throw('Could not delete post', e.status)
     }
   })
   
