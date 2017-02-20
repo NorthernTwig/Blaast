@@ -69,12 +69,12 @@ router
       const updatedWebhook = await WebhookSchema.findOneAndUpdate({_id, ownerId}, body)
 
       if (updatedWebhook === null) {
-        await ctx.throw('You do not own this webhook', 403)
+        ctx.throw(403)
       }
 
       ctx.body = 'Webhook successfully updated'
     } catch(e) {
-      ctx.throw('Could not update webhook with that id', 400)
+      ctx.throw('Could not update webhook with that id', e.status)
     }
   })
   .delete('webhooks/:_id', jwt, async (ctx, next) => {

@@ -1,5 +1,6 @@
 import Router from 'koa-router'
 import PostSchema from '../models/PostSchema'
+import CommentSchema from '../models/CommentSchema'
 import baseUrl from './libs/baseUrl'
 import pagination from './libs/pagination'
 import emitter from './libs/eventBus'
@@ -52,16 +53,15 @@ router
         .skip(offset * limit)
       
       if (posts.length <= 0) {
-        ctx.thorw('That user has no posts', 404)
+        ctx.throw(404)
       }
 
       const postsWithSelf = posts.map(post => generateSelf(post, ctx))
 
       ctx.body = pagination(postsWithSelf, ctx.url, limit, offset, path)
     } catch(e) {
-      ctx.throw('Could not find posts by user with that id', 404)
+      ctx.throw('Could not find posts by user with that id', e.status)
     }
-    
   })
   .post('posts', createPostCheck, jwt, async (ctx, next) => {
     const { title, body } = ctx.request.body
@@ -110,8 +110,11 @@ router
         ctx.throw(403)
       }
 
+      await CommentSchema.remove({ post: _id })
+
       ctx.status = 204
     } catch(e) {
+      console.log(e)
       ctx.throw('Could not delete post', e.status)
     }
   })

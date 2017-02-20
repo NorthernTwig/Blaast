@@ -23,7 +23,7 @@ export const posts = (post, ctx) => {
       self: `${ baseUrl }/users/${ post.author._id }`
     }), 
     comments: `${ baseUrl }/comments/posts/${ post._id }`,
-    self: `${ baseUrl }${ path }/${ post._id }`
+    self: `${ baseUrl }/posts/${ post._id }`
   })
 }
 
