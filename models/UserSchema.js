@@ -14,15 +14,6 @@ export default mongoose.model('UserSchema', mongoose.Schema({
     type: String,
     required: true
   },
-  webhook: {
-    endpoint: {
-      type: String
-    },
-    scope: {
-      type: Array,
-      default: ['push']
-    }
-  },
   date: {
     type: Date,
     default: Date.now,

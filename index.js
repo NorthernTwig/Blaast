@@ -16,10 +16,10 @@ const app = new Koa()
 const router = new Router()
 const PORT = 3000
 
-app.use(errorHandler)
 app.use(cors())
 app.use(bodyParser())
 app.use(json())
+app.use(errorHandler)
 
 router.get('/favicon.ico', async (ctx, next) => {
   ctx.status = 204
