@@ -1,14 +1,14 @@
 import dotenv from 'dotenv'
 dotenv.config()
 import { compare } from 'bcrypt-as-promised'
-import credentialCheck from './middlewares/credentialCheck'
+import credentialCheck from './middlewares/auth/checkCredential'
 import userSchema from '../models/UserSchema'
 import Router from 'koa-router'
 import jwt from 'jsonwebtoken'
 const router = new Router()
 
 router
-  .post('login', credentialCheck, async (ctx, next) => {
+  .post('auth', credentialCheck, async (ctx, next) => {
     const { username, password } = ctx.request.body
     
     try {

@@ -4,10 +4,10 @@ import baseUrl from './libs/baseUrl'
 import pagination from './libs/pagination'
 import emitter from './libs/eventBus'
 import { posts as generateSelf } from './libs/generateSelf'
-import createPostCheck from './middlewares/createPost'
-import deletePostCheck from './middlewares/deletePost'
-import updatePostCheck from './middlewares/updatePost'
-import jwt from './middlewares/jwt'
+import createPostCheck from './middlewares/post/createPost'
+import deletePostCheck from './middlewares/post/deletePost'
+import updatePostCheck from './middlewares/post/updatePost'
+import jwt from './middlewares/auth/jwt'
 const router = new Router()
 
 
@@ -111,7 +111,6 @@ router
       }
 
       ctx.status = 204
-      ctx.body = 'Post was successfully deleted.'
     } catch(e) {
       ctx.throw('Could not delete post', 400)
     }

@@ -1,7 +1,7 @@
 import Router from 'koa-router'
 import WebhookSchema from '../models/WebhookSchema'
-import jwt from './middlewares/jwt'
-import webhookCheck from './middlewares/webhookCheck'
+import jwt from './middlewares/auth/jwt'
+import webhookCheck from './middlewares/webhook/checkWebhook'
 import { webhooks as generateSelf } from './libs/generateSelf'
 import pagination from './libs/pagination'
 const router = Router()
@@ -89,7 +89,6 @@ router
       }
 
       ctx.status = 204
-      ctx.body = 'Webhook was successfully deleted'
     } catch(e) {
       ctx.throw('Could not delete webhook', e.status)
     }
