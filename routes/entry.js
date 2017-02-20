@@ -5,9 +5,10 @@ const router = new Router()
 router
   .get('/', async (ctx, next) => {
     ctx.body = {
-      users: `${baseUrl}/users`,
-      posts: `${baseUrl}/posts`,
-      comments: `${baseUrl}/comments`
+      users: `${ baseUrl }/users`,
+      posts: `${ baseUrl }/posts`,
+      comments: `${ baseUrl }/comments`,
+      webhooks: `${ baseUrl }/webhooks`
     }
   })
 
