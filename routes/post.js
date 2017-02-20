@@ -83,6 +83,22 @@ router
       ctx.throw('Could not create post', 400)
     }
   })
+  .patch('posts/:_id', updatePostCheck, jwt, async (ctx, next) => {
+    const { _id } = ctx.params
+    const authorId = ctx.state.user._id
+
+    try {
+      const updatedPost = await PostSchema.findOneAndUpdate({ _id, 'author._id': authorId }, ctx.request.body)
+
+      if (updatedPost === null) {
+        ctx.throw(403)
+      }
+
+      ctx.body = 'Post was successfully updated'
+    } catch(e) {
+      ctx.throw('Could not update post with that id', e.status)
+    }
+  })
   .delete('posts/:_id', deletePostCheck, jwt, async (ctx, next) => {
     const { _id } = ctx.params
     const authorId = ctx.state.user._id
@@ -98,23 +114,6 @@ router
       ctx.body = 'Post was successfully deleted.'
     } catch(e) {
       ctx.throw('Could not delete post', 400)
-    }
-  })
-  .patch('posts/:_id', updatePostCheck, jwt, async (ctx, next) => {
-    const { _id } = ctx.params
-    const authorId = ctx.state.user._id
-
-    try {
-      const updatedPost = await PostSchema.findOneAndUpdate({ _id, 'author._id': authorId }, ctx.request.body)
-
-      if (updatedPost === null) {
-        ctx.throw('You do not own this post', 403)
-      }
-
-      ctx.body = 'Post was successfully updated'
-    } catch(e) {
-      const message = e.message || 'Could not update post with that id'
-      ctx.throw(message, 400)
     }
   })
   

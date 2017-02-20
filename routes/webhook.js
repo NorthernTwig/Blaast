@@ -85,14 +85,13 @@ router
       const deletedWebhook = await WebhookSchema.findOneAndRemove({_id, ownerId})
 
       if (deletedWebhook === null) {
-        ctx.throw('You do not own this post', 403)
+        ctx.throw(403)
       }
 
       ctx.status = 204
       ctx.body = 'Webhook was successfully deleted'
     } catch(e) {
-      const message = e.message || 'Could not delete webhook'
-      ctx.throw(message, 400)
+      ctx.throw('Could not delete webhook', e.status)
     }
 
   })
