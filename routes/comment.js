@@ -103,5 +103,21 @@ router
       ctx.throw('Could not update comment', e.status)
     }
   })
+  .delete('/comments/:_id', jwt, async (ctx, next) => {
+    const { _id } = ctx.params
+    const authorId = ctx.state.user._id
+
+    try {
+      const deletedComment = await CommentSchema.findOneAndRemove({ _id, 'author._id': authorId}, ctx.request.body)
+
+      if (updatedComment === null) {
+        ctx.throw(403)
+      }
+
+      ctx.status = 204
+    } catch(e) {
+      ctx.throw('Could not delete comment', e.status)
+    }
+  })
 
 export default router
