@@ -113,7 +113,7 @@ router
 
       ctx.body = 'Post was successfully updated'
     } catch(e) {
-      ctx.throw('Could not update post with that Id', 400)
+      ctx.throw('Could not update post with that id', 400)
     }
   })
   

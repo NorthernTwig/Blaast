@@ -54,17 +54,31 @@ router
     }
   })
   .patch('webhooks/:_id', jwt, async (ctx, next) => {
-    const { ownerId } = ctx.state.user
-    const { _id } = ctx.params.body
+    const ownerId = ctx.state.user._id
+    const { _id } = ctx.params
+    const { scope } = ctx.request.body
+    let body = ctx.request.body
+
+    if (scope) {
+      body = Object.assign({}, body, {
+        scope: scope.trim().split(' ')
+      })
+    }
 
     try {
+      const updatedWebhook = await WebhookSchema.findOneAndUpdate({_id, ownerId}, body)
 
+      if (updatedWebhook === null) {
+        await ctx.throw('You do not own this webhook', 403)
+      }
+
+      ctx.body = 'Webhook successfully updated'
     } catch(e) {
-
+      ctx.throw('Could not update webhook with that id', 400)
     }
   })
-  .delete('webhooks', jwt, async (ctx, next) => {
-
+  .delete('webhooks/:_id', jwt, async (ctx, next) => {
+    
   })
 
   export default router
