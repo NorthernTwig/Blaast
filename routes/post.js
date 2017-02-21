@@ -57,6 +57,8 @@ router
   .post('posts', createPostCheck, jwt, async (ctx, next) => {
     try {
       const newPost = await post.create(ctx)
+
+      ctx.set('Location', `${ baseUrl }/posts/${newPost._id}` )
       ctx.status = 201
       ctx.body = `The post "${ ctx.request.body.title }" has been created`
       emitter.emit('post', newPost)
@@ -71,7 +73,6 @@ router
       if (updatedPost === null) {
         ctx.throw(403)
       }
-
       ctx.status = 204
     } catch(e) {
       ctx.throw('Could not update post with that id', e.status)

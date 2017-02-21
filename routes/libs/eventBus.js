@@ -2,9 +2,6 @@ import { EventEmitter } from 'events'
 import rp from 'request-promise'
 import WebhookSchema from '../../models/WebhookSchema'
 
-// TODO: Revamp this - DRY
-// TODO: Ping(?) 
-
 const emitter = new EventEmitter()
 
 emitter.on('post', data => {
@@ -23,7 +20,7 @@ const sendToSubscribers = async (emit, data) => {
   try {
     const webhooks = await WebhookSchema.find({}, 'endpoint scope', { lean: true })
     const eventSubscribers = webhooks.filter(webhook => webhook.scope.includes(emit) || webhook.scope.includes('push'))
-    eventSubscribers.forEach(async subscriber => {
+    await eventSubscribers.forEach(async subscriber => {
       await rp({
         uri: subscriber.endpoint,
         method: 'POST',

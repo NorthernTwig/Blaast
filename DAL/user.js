@@ -1,6 +1,7 @@
 import UserSchema from '../models/UserSchema'
 import PostSchema from '../models/PostSchema'
 import CommentSchema from '../models/CommentSchema'
+import WebhookSchema from '../models/WebhookSchema'
 
 const AUTHOR_ID = 'author._id'
 const AUTHOR_NAME = 'author.name'
@@ -20,7 +21,7 @@ export const getOne = async _id => {
 
 export const create = async body => {
   const { password, username, name } = body
-  await UserSchema.create({
+  return await UserSchema.create({
     password,
     username,
     name
@@ -39,5 +40,6 @@ export const update = async (_id, body) => {
 export const remove = async _id => {
     await UserSchema.findOneAndRemove({ _id })
     await PostSchema.remove({ [AUTHOR_ID]: _id })
+    await WebhookSchema.remove({ ownerId: _id })
     await CommentSchema.update({ [AUTHOR_ID]: _id }, { [AUTHOR_NAME]: DELETED_NAME }, { multi: true })
 }

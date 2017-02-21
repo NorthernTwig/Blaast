@@ -18,6 +18,7 @@ router
     try {
       const users = await user.getAll(limit, offset) 
       const usersWithSelf = users.map(user => generateSelf(user, ctx))
+
       ctx.body = pagination(usersWithSelf, ctx, limit, offset)
     } catch(e) {
       ctx.throw(e.message, e.status)
@@ -39,9 +40,10 @@ router
     const { username, name } = ctx.request.body
 
     try {
-      await user.create(ctx.request.body)
+      const newUser = await user.create(ctx.request.body)
 
       ctx.status = 201
+      ctx.set('Location', `${ baseUrl }/users/${newUser._id}` )
       ctx.body = `The user "${ username }" has been created`
       emitter.emit('user', { username, name })
     } catch(e) {

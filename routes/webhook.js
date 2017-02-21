@@ -4,6 +4,7 @@ import jwt from './middlewares/auth/jwt'
 import webhookCheck from './middlewares/webhook/checkWebhook'
 import { webhooks as generateSelf } from './libs/generateSelf'
 import pagination from './libs/pagination'
+import baseUrl from './libs/baseUrl'
 import * as webhook from '../DAL/webhook'
 const router = Router()
 
@@ -33,7 +34,9 @@ router
   })
   .post('webhooks', webhookCheck, jwt, async (ctx, next) => {
     try {
-      await webhook.create(ctx)
+      const newWebhook = await webhook.create(ctx)
+
+      ctx.set('Location', `${ baseUrl }/webhooks/${newWebhook._id}` )
       ctx.status = 201
       ctx.body = 'Webhook successfully registered'
     } catch(e) {

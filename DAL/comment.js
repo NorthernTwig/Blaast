@@ -68,5 +68,4 @@ export const remove = async ctx => {
   const { _id } = ctx.params
   const authorId = ctx.state.user._id
   await CommentSchema.findOneAndRemove({ _id, [AUTHOR_ID]: authorId})
-
 }

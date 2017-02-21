@@ -75,6 +75,7 @@ router
     try {
       const newComment = await comments.create(ctx)
 
+      ctx.set('Location', `${ baseUrl }/comments/${newComment._id}` )
       ctx.status = 201
       ctx.body = `Comment has been created`
       emitter.emit('comment', newComment)
