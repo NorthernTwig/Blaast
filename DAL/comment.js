@@ -42,14 +42,14 @@ export const create = async ctx => {
     ctx.throw(401)
   }
 
-  return await CommentSchema.create({
+  return await new CommentSchema({
     body,
     post,
     author: {
       _id,
       name
     }
-  })
+  }).save()
 }
 
 export const update = async () => {

@@ -21,11 +21,12 @@ export const getOne = async _id => {
 
 export const create = async body => {
   const { password, username, name } = body
-  return await UserSchema.create({
+
+   return await new UserSchema({
     password,
     username,
     name
-  })
+  }).save()
 }
 
 export const update = async (_id, body) => {

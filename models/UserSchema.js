@@ -4,7 +4,8 @@ import { hash } from 'bcrypt-as-promised'
 export default mongoose.model('UserSchema', mongoose.Schema({
   username: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   password: {
     type: String,

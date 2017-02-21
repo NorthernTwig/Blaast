@@ -32,14 +32,14 @@ export const create = async (ctx) => {
     ctx.throw(403)
   }
 
-  return await PostSchema.create({
+  return await new PostSchema({
     title,
     body,
     author: {
       _id,
       name
     }
-  })
+  }).save()
 }
 
 export const update = async (ctx) => {

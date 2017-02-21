@@ -39,12 +39,12 @@ export const create = async ctx => {
     ctx.throw(403)
   }
 
-  await WebhookSchema.create({
+  await new WebhookSchema({
     ownerId: _id,
     endpoint,
     scope: scope.trim().split(' '),
     secret
-  })
+  }).save()
 }
 
 export const update = async (ctx, body) => {

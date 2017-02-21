@@ -47,7 +47,10 @@ router
       ctx.body = `The user "${ username }" has been created`
       emitter.emit('user', { username, name })
     } catch(e) {
-      ctx.throw('Could not create a user with those credentials', 400)
+      if (e.code === 11000) {
+        ctx.throw('Username is already taken', 400)
+      }
+      ctx.throw('Could not create a user with those credentials', e.status)
     }
   })
   .patch('users', jwt, async (ctx, next) => {
@@ -57,6 +60,9 @@ router
       await user.update(_id, ctx.request.body)
       ctx.status = 204
     } catch(e) {
+      if (e.code === 11000) {
+        ctx.throw('Username is already taken', 400)
+      }
       ctx.throw('Could not update user', e.status)
     }
   })
