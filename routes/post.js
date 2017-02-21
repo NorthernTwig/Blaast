@@ -79,7 +79,6 @@ router
   })
   .delete('posts/:_id', deletePostCheck, jwt, async (ctx, next) => {
     
-    
     try {
       const deletedPost = await post.remove(ctx)
 

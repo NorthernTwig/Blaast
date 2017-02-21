@@ -4,10 +4,7 @@ import CommentSchema from '../models/CommentSchema'
 import { hash } from 'bcrypt-as-promised'
 
 const AUTHOR_ID = 'author._id'
-const AUTHOR_NAME = 'author.name'
-const DELETED_NAME = '[ DELETED ]'
 const POST_DATA = '_id author title body date'
-const SALT_ROUNDS = 10
 
 export const getAll = async (limit, offset) => {
   return await PostSchema.find({}, POST_DATA, { lean: true })

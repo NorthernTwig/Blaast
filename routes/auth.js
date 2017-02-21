@@ -1,6 +1,7 @@
 import dotenv from 'dotenv'
 dotenv.config()
 import { compare } from 'bcrypt-as-promised'
+import * as auth from '../DAL/auth'
 import credentialCheck from './middlewares/auth/checkCredential'
 import UserSchema from '../models/UserSchema'
 import Router from 'koa-router'
@@ -13,7 +14,7 @@ router
     const { username, password } = ctx.request.body
     
     try {
-      const user = await UserSchema.findOne({username})
+      const user = await auth.getUser(username)
       const correctPassword = await compare(password, user.password)
       ctx.status = 200
       ctx.body = {
