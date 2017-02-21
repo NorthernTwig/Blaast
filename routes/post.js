@@ -35,6 +35,7 @@ router
     
     try {
       const post = await PostSchema.findOne({ _id }, '_id author title body date', { lean: true })
+
       ctx.body = generateSelf(post, ctx)
     } catch(e) {
       ctx.throw('Could not find a post with that id', 404)
@@ -42,7 +43,7 @@ router
   })
   .get('posts/users/:_id', async (ctx, next) => {
     const { _id } = ctx.params 
-    const limit = parseInt(ctx.query.limit) || 3
+    const limit = parseInt(ctx.query.limit) || 10
     const offset = parseInt(ctx.query.offset) || 0
     const path = ctx.req._parsedUrl.pathname
 
@@ -114,7 +115,6 @@ router
 
       ctx.status = 204
     } catch(e) {
-      console.log(e)
       ctx.throw('Could not delete post', e.status)
     }
   })

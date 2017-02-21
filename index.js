@@ -6,7 +6,7 @@ import bodyParser from 'koa-bodyparser'
 import cors from 'koa-cors'
 import db from './utils/mongo'
 import errorHandler from './utils/errorHandler'
-import login from './routes/login'
+import auth from './routes/auth'
 import entry from './routes/entry'
 import user from './routes/user'
 import post from './routes/post'
@@ -26,7 +26,7 @@ router.get('/favicon.ico', async (ctx, next) => {
   ctx.status = 204
 })
 
-router.use(login.routes())
+router.use(auth.routes())
 router.use(webhook.routes())
 router.use(comment.routes())
 router.use(post.routes())

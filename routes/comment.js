@@ -42,9 +42,14 @@ router
     const offset = parseInt(ctx.query.offset) || 0
     const path = ctx.req._parsedUrl.pathname
     const { _id } = ctx.params
-    
+
     try {
       const comments = await CommentSchema.find({ 'author._id': _id  }, '_id body author post date', { lean: true })
+      
+      if (comments.length < 1) {
+        ctx.throw(404)
+      }
+
       ctx.body = comments.map(comment => generateSelf(comment, ctx))
     } catch(e) {
       ctx.throw('Could not find comments by user with that id', 404)
@@ -59,10 +64,15 @@ router
 
     try {
       const comments = await CommentSchema.find({ 'post': _id  }, '_id body author post date', { lean: true })
+
+      if (comments.length < 1) {
+        ctx.throw(404)
+      }
+     
       const commentsWithSelf = comments.map(comment => generateSelf(comment, ctx))
       ctx.body = pagination(commentsWithSelf, ctx.url, limit, offset, path)
     } catch(e) {
-      ctx.throw('Could not find comments on post with that id', 404)
+      ctx.throw('Could not find comments on post with that id', e.status)
     }
   })
   .post('comments/posts/:post', jwt, checkComment, async (ctx, next) => {
