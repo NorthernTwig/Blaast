@@ -16,7 +16,7 @@ router
     const offset = parseInt(ctx.query.offset) || 0
     
     try {
-      const comments = comment.getAll(limit, offset)
+      const comments = await comment.getAll(limit, offset)
 
       const commentsWithSelf = comments.map(comment => generateSelf(comment, ctx))
       ctx.body = pagination(commentsWithSelf, ctx, limit, offset)
@@ -28,7 +28,7 @@ router
     const { _id } = ctx.params
 
     try {
-      const commentInfo = comments.getOne(_id)
+      const commentInfo = await comments.getOne(_id)
       ctx.body = generateSelf(commentInfo, ctx)
     } catch(e) {
       ctx.throw('Could not find a comment with that id', 404)
@@ -40,7 +40,7 @@ router
     const { _id } = ctx.params
 
     try {
-      const comments = comment.getUsersComments(limit, offset, _id)
+      const comments = await comment.getUsersComments(limit, offset, _id)
       
       if (comments.length < 1) {
         ctx.throw(404)
@@ -59,7 +59,7 @@ router
     const { _id } = ctx.params
 
     try {
-      const comments = comment.getPostsComments(_id)
+      const comments = await comment.getPostsComments(_id)
 
       if (comments.length < 1) {
         ctx.throw(404)
@@ -84,7 +84,7 @@ router
   })
   .patch('/comments/:_id', jwt, async (ctx, next) => {
     try {
-      const updatedComment = comment.update(ctx)
+      const updatedComment = await comment.update(ctx)
 
       if (updatedComment === null) {
         ctx.throw(403)
@@ -97,7 +97,7 @@ router
   })
   .delete('/comments/:_id', jwt, async (ctx, next) => {
     try {
-      const deletedComment = comment.remove(ctx)
+      const deletedComment = await comment.remove(ctx)
 
       if (updatedComment === null) {
         ctx.throw(403)

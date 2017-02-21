@@ -1,13 +1,11 @@
 import UserSchema from '../models/UserSchema'
 import PostSchema from '../models/PostSchema'
 import CommentSchema from '../models/CommentSchema'
-import { hash } from 'bcrypt-as-promised'
 
 const AUTHOR_ID = 'author._id'
 const AUTHOR_NAME = 'author.name'
 const DELETED_NAME = '[ DELETED ]'
 const USER_DATA = '_id username name'
-const SALT_ROUNDS = 10
 
 export const getAll = async (limit, offset) => {
   return await UserSchema.find({}, USER_DATA, { lean: true }) 

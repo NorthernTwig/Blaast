@@ -4,6 +4,7 @@ import jwt from './middlewares/auth/jwt'
 import webhookCheck from './middlewares/webhook/checkWebhook'
 import { webhooks as generateSelf } from './libs/generateSelf'
 import pagination from './libs/pagination'
+import * as webhook from '../DAL/webhook'
 const router = Router()
 
 
@@ -11,43 +12,28 @@ router
   .get('webhooks', jwt, async (ctx, next) => {
     const limit = parseInt(ctx.query.limit) || 10
     const offset = parseInt(ctx.query.offset) || 0
-    const path = ctx.req._parsedUrl.pathname
     const { _id } = ctx.state.user
 
     try {
-      const webhooks = await WebhookSchema.find({ownerId: _id}, '_id ownerId endpoint scope', { lean: true })
-        .sort({ 'date': -1 })
-        .limit(limit)
-        .skip(offset * limit)
+      const webhooks = await webhook.getAll(limit, offset, _id)
 
       const webhooksWithSelf = webhooks.map(webhook => generateSelf(webhook, ctx))
-      ctx.body = pagination(webhooksWithSelf, ctx.url, limit, offset, path)
+      ctx.body = pagination(webhooksWithSelf, ctx, limit, offset)
     } catch(e) {
       ctx.throw('Could not find any webhooks owned by you', 404)
     }
   })
   .get('webhooks/:_id', jwt, async (ctx, next) => {
-    const { _id } = ctx.params
-    const ownerId = ctx.state.user._id
-
     try {
-      const webhook = await WebhookSchema.findOne({ownerId, _id}, '_id ownerId endpoint scope', { lean: true })
-      ctx.body = generateSelf(webhook, ctx)
+      const webhookInfo = await webhook.getOne(ctx)
+      ctx.body = generateSelf(webhookInfo, ctx)
     } catch(e) {
       ctx.throw('Could not find a webhook owned by you with that id', 404)
     }
   })
   .post('webhooks', webhookCheck, jwt, async (ctx, next) => {
-    const { _id } = ctx.state.user
-    const { endpoint, scope, secret } = ctx.request.body
-
     try {
-      await WebhookSchema.create({
-        ownerId: _id,
-        endpoint,
-        scope: scope.trim().split(' '),
-        secret
-      })
+      await webhook.create(ctx)
       ctx.status = 201
       ctx.body = 'Webhook successfully registered'
     } catch(e) {
@@ -55,8 +41,6 @@ router
     }
   })
   .patch('webhooks/:_id', jwt, async (ctx, next) => {
-    const ownerId = ctx.state.user._id
-    const { _id } = ctx.params
     const { scope } = ctx.request.body
     let body = ctx.request.body
 
@@ -67,7 +51,7 @@ router
     }
 
     try {
-      const updatedWebhook = await WebhookSchema.findOneAndUpdate({_id, ownerId}, body)
+      const updatedWebhook = await webhook.update(ctx, body)
 
       if (updatedWebhook === null) {
         ctx.throw(403)
@@ -79,11 +63,8 @@ router
     }
   })
   .delete('webhooks/:_id', jwt, async (ctx, next) => {
-    const { _id } = ctx.params
-    const ownerId = ctx.state.user._id
-
     try {
-      const deletedWebhook = await WebhookSchema.findOneAndRemove({_id, ownerId})
+      const deletedWebhook = await webhook.remove(ctx)
 
       if (deletedWebhook === null) {
         ctx.throw(403)

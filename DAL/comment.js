@@ -3,7 +3,6 @@ import PostSchema from '../models/PostSchema'
 import CommentSchema from '../models/CommentSchema'
 
 const AUTHOR_ID = 'author._id'
-const AUTHOR_NAME = 'author.name'
 const DELETED_NAME = '[ DELETED ]'
 const USER_DATA = '_id body author post date'
 const SALT_ROUNDS = 10
