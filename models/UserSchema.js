@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-const Schema = mongoose.Schema
+import { hash } from 'bcrypt-as-promised'
 
 export default mongoose.model('UserSchema', mongoose.Schema({
   username: {
@@ -19,4 +19,12 @@ export default mongoose.model('UserSchema', mongoose.Schema({
     default: Date.now,
     required: true
   }
+}).pre('save', async function(next) {
+  try {
+    this.password = await hash(this.password, 10)
+    next()
+  } catch(e) {
+    return next(e)
+  } 
 }))
+

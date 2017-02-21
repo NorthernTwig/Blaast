@@ -1,6 +1,8 @@
 import baseUrl from './baseUrl'
 
-export default (array, url, limit, offset, path) => {
+export default (array, ctx, limit, offset) => {
+  const url = ctx.url
+  const path = ctx.req._parsedUrl.pathname
 
   return [...array, {
         self: `${ baseUrl }${ url }`,
