@@ -1,7 +1,6 @@
 import UserSchema from '../models/UserSchema'
 import PostSchema from '../models/PostSchema'
 import CommentSchema from '../models/CommentSchema'
-import { hash } from 'bcrypt-as-promised'
 
 const AUTHOR_ID = 'author._id'
 const POST_DATA = '_id author title body date'
