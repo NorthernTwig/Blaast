@@ -6,6 +6,7 @@ import bodyParser from 'koa-bodyparser'
 import cors from 'koa-cors'
 import db from './utils/mongo'
 import errorHandler from './utils/errorHandler'
+import acceptHandler from './utils/acceptHandler'
 import auth from './routes/auth'
 import entry from './routes/entry'
 import user from './routes/user'
@@ -21,6 +22,7 @@ app.use(cors())
 app.use(bodyParser())
 app.use(json())
 app.use(errorHandler)
+app.use(acceptHandler)
 
 router.get('/favicon.ico', async (ctx, next) => {
   ctx.status = 204
