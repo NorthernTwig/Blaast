@@ -41,11 +41,6 @@ router
 
     try {
       const comments = await comment.getUsersComments(limit, offset, _id)
-      
-      if (comments.length < 1) {
-        ctx.throw(404)
-      }
-
       const commentsWithSelf = comments.map(comment => generateSelf(comment, ctx))
       ctx.body = pagination(commentsWithSelf, limit, offset)
     } catch(e) {
@@ -59,12 +54,7 @@ router
     const { _id } = ctx.params
 
     try {
-      const comments = await comment.getPostsComments(_id)
-
-      if (comments.length < 1) {
-        ctx.throw(404)
-      }
-     
+      const comments = await comment.getPostsComments(limit, offset, _id)
       const commentsWithSelf = comments.map(comment => generateSelf(comment, ctx))
       ctx.body = pagination(commentsWithSelf, ctx, limit, offset)
     } catch(e) {
@@ -73,13 +63,14 @@ router
   })
   .post('comments/posts/:post', jwt, checkComment, async (ctx, next) => {
     try {
-      const newComment = await comments.create(ctx)
+      const newComment = await comment.create(ctx)
 
       ctx.set('Location', `${ baseUrl }/comments/${newComment._id}` )
       ctx.status = 201
       ctx.body = `Comment has been created`
       emitter.emit('comment', newComment)
     } catch (e) {
+      console.log(e)
       ctx.throw('Could not create comment on post with that Id', 400)
     }
   })

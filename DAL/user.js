@@ -40,7 +40,12 @@ export const update = async (_id, body) => {
 
 export const remove = async _id => {
     await UserSchema.findOneAndRemove({ _id })
+    const postsByUser = await PostSchema.find({ [AUTHOR_ID]: _id })
     await PostSchema.remove({ [AUTHOR_ID]: _id })
     await WebhookSchema.remove({ ownerId: _id })
     await CommentSchema.update({ [AUTHOR_ID]: _id }, { [AUTHOR_NAME]: DELETED_NAME }, { multi: true })
+    await postsByUser.forEach(async (post) => {
+      await CommentSchema.remove({ post: post._id })
+    })
+
 }
