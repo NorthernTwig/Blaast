@@ -23,20 +23,18 @@ const sendToSubscribers = async (emit, data) => {
   try {
     const webhooks = await WebhookSchema.find({}, 'endpoint scope', { lean: true })
     const eventSubscribers = webhooks.filter(webhook => webhook.scope.includes(emit) || webhook.scope.includes('push'))
-    eventSubscribers.forEach(subscriber => {
-      rp({
+    eventSubscribers.forEach(async subscriber => {
+      await rp({
         uri: subscriber.endpoint,
         method: 'POST',
         headers:  { 'Content-Type': 'application/json' },
         body: data,
         json: true
       })
-      .catch((e) => console.log(e))
     })
       
   } catch(e) {
-    console.log(e)
-    return
+    console.log('Could not post hook')
   }
 }
 

@@ -1,9 +1,5 @@
 import Router from 'koa-router'
 import mongoose from 'mongoose'
-import { hash } from 'bcrypt-as-promised'
-import UserSchema from '../models/UserSchema'
-import PostSchema from '../models/PostSchema'
-import CommentSchema from '../models/CommentSchema'
 import * as user from '../DAL/userDAL'
 import createUserCheck from './middlewares/user/createUser'
 import jwt from './middlewares/auth/jwt'
@@ -33,8 +29,8 @@ router
     const { _id } = ctx.params
 
     try {
-      const user = await user.getOne(_id)
-      ctx.body = generateSelf(user, ctx)
+      const userInfo = await user.getOne(_id)
+      ctx.body = generateSelf(userInfo, ctx)
     } catch(e) {
       console.log(e)
       ctx.throw('Could not find a user with that id', 404)
@@ -61,6 +57,7 @@ router
       await user.update(_id, ctx.request.body)
       ctx.status = 204
     } catch(e) {
+      console.log(e)
       ctx.throw('Could not update user', e.status)
     }
   })

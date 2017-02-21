@@ -1,11 +1,12 @@
 import UserSchema from '../models/UserSchema'
 import PostSchema from '../models/PostSchema'
 import CommentSchema from '../models/CommentSchema'
+import { hash } from 'bcrypt-as-promised'
 
 const AUTHOR_ID = 'author._id'
 const AUTHOR_NAME = 'author.name'
 const DELETED_NAME = '[ DELETED ]'
-const USER_DATA = 'id username name'
+const USER_DATA = '_id username name'
 const SALT_ROUNDS = 10
 
 export const getAll = async (limit, offset) => {
@@ -19,7 +20,6 @@ export const getOne = async _id => {
   return await UserSchema.findOne({ _id }, USER_DATA, { lean: true })
 }
 
-// Hashing the password in the DAL?
 export const create = async body => {
   const { password, username, name } = body
   await UserSchema.create({
@@ -30,13 +30,6 @@ export const create = async body => {
 }
 
 export const update = async (_id, body) => {
-  if (body.password) {
-    const password = await hash(body.password, SALT_ROUNDS)
-    body = Object.assign({}, body, {
-      password
-    })
-  }
-
   await UserSchema.findOneAndUpdate({ _id }, body)
 
   if (body.username) {
