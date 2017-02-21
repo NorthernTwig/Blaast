@@ -1,6 +1,6 @@
 import Router from 'koa-router'
 import mongoose from 'mongoose'
-import * as user from '../DAL/userDAL'
+import * as user from '../DAL/user'
 import createUserCheck from './middlewares/user/createUser'
 import jwt from './middlewares/auth/jwt'
 import baseUrl from './libs/baseUrl'
@@ -18,7 +18,6 @@ router
     try {
       const users = await user.getAll(limit, offset) 
       const usersWithSelf = users.map(user => generateSelf(user, ctx))
-
       ctx.body = pagination(usersWithSelf, ctx, limit, offset)
     } catch(e) {
       ctx.throw(e.message, e.status)
@@ -32,7 +31,6 @@ router
       const userInfo = await user.getOne(_id)
       ctx.body = generateSelf(userInfo, ctx)
     } catch(e) {
-      console.log(e)
       ctx.throw('Could not find a user with that id', 404)
     }
     
@@ -57,7 +55,6 @@ router
       await user.update(_id, ctx.request.body)
       ctx.status = 204
     } catch(e) {
-      console.log(e)
       ctx.throw('Could not update user', e.status)
     }
   })
@@ -65,7 +62,7 @@ router
     const { _id } = ctx.state.user
 
     try {
-      await user.deleteOne(_id)
+      await user.remove(_id)
       ctx.status = 204
     } catch(e) {
       ctx.throw('Could not delete user', e.status)

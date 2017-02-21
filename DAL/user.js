@@ -38,7 +38,7 @@ export const update = async (_id, body) => {
   }
 }
 
-export const deleteOne = async _id => {
+export const remove = async _id => {
     await UserSchema.findOneAndRemove({ _id })
     await PostSchema.remove({ [AUTHOR_ID]: _id })
     await CommentSchema.update({ [AUTHOR_ID]: _id }, { [AUTHOR_NAME]: DELETED_NAME }, { multi: true })

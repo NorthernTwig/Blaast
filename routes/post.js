@@ -1,6 +1,7 @@
 import Router from 'koa-router'
 import PostSchema from '../models/PostSchema'
 import CommentSchema from '../models/CommentSchema'
+import * as post from '../DAL/post'
 import baseUrl from './libs/baseUrl'
 import pagination from './libs/pagination'
 import emitter from './libs/eventBus'
@@ -16,16 +17,11 @@ router
   .get('posts', async (ctx, next) => {
     const limit = parseInt(ctx.query.limit) || 10
     const offset = parseInt(ctx.query.offset) || 0
-    const path = ctx.req._parsedUrl.pathname
 
     try {
-      const posts = await PostSchema.find({}, '_id author title body date', { lean: true })
-        .sort({ 'date': -1 })
-        .limit(limit)
-        .skip(offset * limit)
-
+      const posts = await post.getAll(limit, offset)
       const postsWithSelf = posts.map(post => generateSelf(post, ctx))
-      ctx.body = pagination(postsWithSelf, ctx.url, limit, offset, path)
+      ctx.body = pagination(postsWithSelf, ctx, limit, offset)
     } catch(e) {
       ctx.throw(e.message, e.status)
     }
@@ -34,9 +30,8 @@ router
     const { _id } = ctx.params
     
     try {
-      const post = await PostSchema.findOne({ _id }, '_id author title body date', { lean: true })
-
-      ctx.body = generateSelf(post, ctx)
+      const postInfo = await post.getOne(_id)
+      ctx.body = generateSelf(postInfo, ctx)
     } catch(e) {
       ctx.throw('Could not find a post with that id', 404)
     }
@@ -45,51 +40,33 @@ router
     const { _id } = ctx.params 
     const limit = parseInt(ctx.query.limit) || 10
     const offset = parseInt(ctx.query.offset) || 0
-    const path = ctx.req._parsedUrl.pathname
 
     try {
-      const posts = await PostSchema.find({ 'author._id': _id }, '_id title body author date', { lean: true })
-        .sort({ 'date': -1 })
-        .limit(limit)
-        .skip(offset * limit)
+      const posts = await post.getUsersPost(_id, limit, offset)
       
       if (posts.length <= 0) {
         ctx.throw(404)
       }
 
       const postsWithSelf = posts.map(post => generateSelf(post, ctx))
-
-      ctx.body = pagination(postsWithSelf, ctx.url, limit, offset, path)
+      ctx.body = pagination(postsWithSelf, ctx, limit, offset)
     } catch(e) {
       ctx.throw('Could not find posts by user with that id', e.status)
     }
   })
   .post('posts', createPostCheck, jwt, async (ctx, next) => {
-    const { title, body } = ctx.request.body
-    const { name, _id } = ctx.state.user
-
     try {
-      const newPost = await PostSchema.create({
-        title,
-        body,
-        author: {
-          _id,
-          name
-        }
-      })
+      const newPost = await post.create(ctx)
       ctx.status = 201
-      ctx.body = `The post "${ title }" has been created`
+      ctx.body = `The post "${ ctx.request.body.title }" has been created`
       emitter.emit('post', newPost)
     } catch(e) {
       ctx.throw('Could not create post', 400)
     }
   })
   .patch('posts/:_id', updatePostCheck, jwt, async (ctx, next) => {
-    const { _id } = ctx.params
-    const authorId = ctx.state.user._id
-
     try {
-      const updatedPost = await PostSchema.findOneAndUpdate({ _id, 'author._id': authorId }, ctx.request.body)
+      const updatedPost = await post.update(ctx)
 
       if (updatedPost === null) {
         ctx.throw(403)
@@ -101,17 +78,14 @@ router
     }
   })
   .delete('posts/:_id', deletePostCheck, jwt, async (ctx, next) => {
-    const { _id } = ctx.params
-    const authorId = ctx.state.user._id
+    
     
     try {
-      const deletedPost = await PostSchema.findOneAndRemove({ _id, 'author._id': authorId })
+      const deletedPost = await post.remove(ctx)
 
       if (deletedPost === null) {
         ctx.throw(403)
       }
-
-      await CommentSchema.remove({ post: _id })
 
       ctx.status = 204
     } catch(e) {
