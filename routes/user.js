@@ -2,6 +2,7 @@ import Router from 'koa-router'
 import mongoose from 'mongoose'
 import * as user from '../DAL/user'
 import createUserCheck from './middlewares/user/createUser'
+import createUserCheck from './middlewares/user/updateUser'
 import jwt from './middlewares/auth/jwt'
 import baseUrl from './libs/baseUrl'
 import emitter from './libs/eventBus'
@@ -53,7 +54,7 @@ router
       ctx.throw('Could not create a user with those credentials', e.status)
     }
   })
-  .patch('users', jwt, async (ctx, next) => {
+  .patch('users', updateUserCheck, jwt, async (ctx, next) => {
     const { _id } = ctx.state.user
 
     try {

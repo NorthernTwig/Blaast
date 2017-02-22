@@ -46,7 +46,7 @@ export const update = async (ctx) => {
   const { _id } = ctx.params
   const authorId = ctx.state.user._id
   const user = await UserSchema.findOne({ _id: authorId })
-
+ 
   if (!user) {
     ctx.throw(403)
   }
