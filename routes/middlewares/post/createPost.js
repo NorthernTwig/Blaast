@@ -1,8 +1,8 @@
 export default async (ctx, next) => {
   const { title, body } = ctx.request.body
   const newPostObject = {
-    title: title,
-    body: body
+    title,
+    body
   }
 
   const dataFields = () => ({
@@ -17,7 +17,7 @@ export default async (ctx, next) => {
 
   if (newPostObject.title.trim().length === 0 || newPostObject.body.trim().length === 0) {
     ctx.data = dataFields()
-    ctx.throw('The title or body is empty', 400)
+    await ctx.throw('The title or body is empty', 400)
   }
 
   await next()

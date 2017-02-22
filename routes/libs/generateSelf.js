@@ -16,7 +16,6 @@ export const comments = (comment, ctx) => {
 }
 
 export const posts = (post, ctx) => {
-  const path = ctx.req._parsedUrl.pathname
 
   return Object.assign({}, post, {
     author: Object.assign({}, post.author, {
@@ -43,4 +42,10 @@ export const webhooks = (webhook, ctx) => {
   return Object.assign({}, webhook, {
     self: `${ baseUrl }/webhooks/${ webhook._id }`
   })
+}
+
+export const main = ctx => {
+  const path = ctx.req._parsedUrl.pathname
+  
+  return `${baseUrl}${path}`
 }

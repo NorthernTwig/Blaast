@@ -2,7 +2,7 @@ import Router from 'koa-router'
 import WebhookSchema from '../models/WebhookSchema'
 import jwt from './middlewares/auth/jwt'
 import webhookCheck from './middlewares/webhook/checkWebhook'
-import { webhooks as generateSelf } from './libs/generateSelf'
+import { webhooks as generateSelf, main as mainSelf } from './libs/generateSelf'
 import pagination from './libs/pagination'
 import baseUrl from './libs/baseUrl'
 import * as webhook from '../DAL/webhook'
@@ -38,7 +38,11 @@ router
 
       ctx.set('Location', `${ baseUrl }/webhooks/${newWebhook._id}` )
       ctx.status = 201
-      ctx.body = 'Webhook successfully registered'
+      ctx.body = {
+        status: ctx.status,
+        location: ctx.response.header.location,
+        self: mainSelf(ctx)
+      }
     } catch(e) {
       ctx.throw('Could not register webhook', 400)
     }

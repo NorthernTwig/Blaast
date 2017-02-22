@@ -4,6 +4,7 @@ import { compare } from 'bcrypt-as-promised'
 import * as auth from '../DAL/auth'
 import credentialCheck from './middlewares/auth/checkCredential'
 import UserSchema from '../models/UserSchema'
+import { main as mainSelf } from './libs/generateSelf'
 import Router from 'koa-router'
 import jwt from 'jsonwebtoken'
 const router = new Router()
@@ -19,7 +20,8 @@ router
       ctx.status = 200
       ctx.body = {
         token: jwt.sign({ name: username, _id: user._id }, process.env.PUBLIC_SECRET),
-        message: 'Logged in'
+        message: 'Logged in',
+        self: mainSelf(ctx)
       }
     } catch(e) {
       ctx.throw('A user with the entered credentials could not be found', 403)

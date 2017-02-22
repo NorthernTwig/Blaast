@@ -7,7 +7,7 @@ import jwt from './middlewares/auth/jwt'
 import baseUrl from './libs/baseUrl'
 import emitter from './libs/eventBus'
 import pagination from './libs/pagination'
-import { users as generateSelf } from './libs/generateSelf'
+import { users as generateSelf, main as mainSelf } from './libs/generateSelf'
 const router = new Router()
 
 
@@ -45,7 +45,11 @@ router
 
       ctx.status = 201
       ctx.set('Location', `${ baseUrl }/users/${newUser._id}` )
-      ctx.body = `The user "${ username }" has been created`
+      ctx.body = {
+        status: ctx.status,
+        location: ctx.response.header.location,
+        self: mainSelf(ctx)
+      }
       emitter.emit('user', { username, name })
     } catch(e) {
       if (e.code === 11000) {

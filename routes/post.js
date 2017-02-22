@@ -5,7 +5,7 @@ import * as post from '../DAL/post'
 import baseUrl from './libs/baseUrl'
 import pagination from './libs/pagination'
 import emitter from './libs/eventBus'
-import { posts as generateSelf } from './libs/generateSelf'
+import { posts as generateSelf, main as mainSelf } from './libs/generateSelf'
 import createPostCheck from './middlewares/post/createPost'
 import deletePostCheck from './middlewares/post/deletePost'
 import updatePostCheck from './middlewares/post/updatePost'
@@ -57,10 +57,13 @@ router
   .post('posts', createPostCheck, jwt, async (ctx, next) => {
     try {
       const newPost = await post.create(ctx)
-
       ctx.set('Location', `${ baseUrl }/posts/${newPost._id}` )
       ctx.status = 201
-      ctx.body = `The post "${ ctx.request.body.title }" has been created`
+      ctx.body = {
+        status: ctx.status,
+        location: ctx.response.header.location,
+        self: mainSelf(ctx)
+      }
       emitter.emit('post', newPost)
     } catch(e) {
       ctx.throw('Could not create post', 400)

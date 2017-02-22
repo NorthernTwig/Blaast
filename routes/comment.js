@@ -5,7 +5,7 @@ import * as comment from '../DAL/comment'
 import checkComment from './middlewares/comment/checkComment'
 import pagination from './libs/pagination'
 import emitter from './libs/eventBus'
-import { comments as generateSelf } from './libs/generateSelf'
+import { comments as generateSelf, main as mainSelf } from './libs/generateSelf'
 import baseUrl from './libs/baseUrl'
 const router = new Router()
 
@@ -67,10 +67,13 @@ router
 
       ctx.set('Location', `${ baseUrl }/comments/${newComment._id}` )
       ctx.status = 201
-      ctx.body = `Comment has been created`
+      ctx.body = {
+        status: ctx.status,
+        location: ctx.response.header.location,
+        self: mainSelf(ctx)
+      }
       emitter.emit('comment', newComment)
     } catch (e) {
-      console.log(e)
       ctx.throw('Could not create comment on post with that Id', 400)
     }
   })

@@ -9,8 +9,8 @@ GET - / (works)
 GET - /users (works)
 GET - /users/:id (works)
 POST - /users (works) (error handling works)
-PATCH - /users 
-DELETE - /users
+PATCH - /users (works) (error handling works)
+DELETE - /users (works)
 
 #### Auth
 POST - /auth (works)
