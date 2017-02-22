@@ -3,9 +3,9 @@ import PostSchema from '../models/PostSchema'
 import CommentSchema from '../models/CommentSchema'
 import WebhookSchema from '../models/WebhookSchema'
 
-const WEBHOOK_DATA = '_id ownerId endpoint scope'
+const WEBHOOK_DATA = '_id ownerId endpoint scope secret'
 
-export const getAll = async (limit, offset) => {
+export const getAll = async (limit, offset, _id) => {
   const user = await UserSchema.findOne({ _id })
 
   if (!user) {
@@ -21,7 +21,7 @@ export const getAll = async (limit, offset) => {
 export const getOne = async ctx => {
   const { _id } = ctx.params
   const ownerId = ctx.state.user._id
-  const user = await UserSchema.findOne({ _id })
+  const user = await UserSchema.findOne({ _id: ownerId })
 
   if (!user) {
     ctx.throw(403)
@@ -39,7 +39,7 @@ export const create = async ctx => {
     ctx.throw(403)
   }
 
-  await new WebhookSchema({
+  return await new WebhookSchema({
     ownerId: _id,
     endpoint,
     scope: scope.trim().split(' '),
@@ -50,7 +50,7 @@ export const create = async ctx => {
 export const update = async (ctx, body) => {
   const ownerId = ctx.state.user._id
   const { _id } = ctx.params
-  const user = await UserSchema.findOne({ _id })
+  const user = await UserSchema.findOne({ _id: ownerId })
 
   if (!user) {
     ctx.throw(403)
@@ -62,7 +62,7 @@ export const update = async (ctx, body) => {
 export const remove = async ctx => {
   const { _id } = ctx.params
   const ownerId = ctx.state.user._id
-  const user = await UserSchema.findOne({ _id })
+  const user = await UserSchema.findOne({ _id: ownerId })
 
   if (!user) {
     ctx.throw(403)

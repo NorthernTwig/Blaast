@@ -8,33 +8,38 @@ GET - / (works)
 #### User
 GET - /users (works)
 GET - /users/:id (works)
-POST - /users (works) (error handling works)
-PATCH - /users (works) (error handling works)
+POST - /users (works)
+PATCH - /users (works)
 DELETE - /users (works)
 
 #### Auth
 POST - /auth (works)
 
 #### Post
-GET - /posts
-GET - /posts/:id
-GET - /posts/users/:id
-POST - /posts
-PATCH - /posts/:id
-DELETE - /posts/:id
+GET - /posts (works)
+GET - /posts/:id (works)
+GET - /posts/users/:id (works)
+POST - /posts (works) (500?)
+PATCH - /posts/:id (works)
+DELETE - /posts/:id (works)
 
 #### Comment
-GET - /comments
-GET - /comments/:id
-GET - /comments/users/:id
-GET - /comments/posts/:id
-POST - /comments/posts/:id
-PATCH - /comments/:id
-DELETE - /comments/:id
+GET - /comments (works)
+GET - /comments/:id (works)
+GET - /comments/users/:id (works)
+GET - /comments/posts/:id (works)
+POST - /comments/posts/:id (works)
+PATCH - /comments/:id (works)
+DELETE - /comments/:id (works)
 
 #### Webhook
-GET - /webhooks
-GET - /webhooks/:id
-POST - /webhooks
-PATCH - /webhooks/:id
-DELETE - /webhooks/:id
+GET - /webhooks (works)
+GET - /webhooks/:id (works)
+POST - /webhooks (works)
+PATCH - /webhooks/:id (works) (500?)
+DELETE - /webhooks/:id (works)
+
+#### Request Chains
+DELETE - /posts/:id -> Remove comments (works)
+DELETE - /users -> Set comment owners to '[ deleted ]', remove posts, remove webhooks (works)  
+PATCH - /users -> If name change, Set comment/post owner name to new Name (works)

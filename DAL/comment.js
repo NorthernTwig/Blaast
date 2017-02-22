@@ -52,7 +52,7 @@ export const create = async ctx => {
   }).save()
 }
 
-export const update = async () => {
+export const update = async ctx => {
   const { _id } = ctx.params
   const authorId = ctx.state.user._id
   const user = await UserSchema.find({ _id })
@@ -67,5 +67,5 @@ export const update = async () => {
 export const remove = async ctx => {
   const { _id } = ctx.params
   const authorId = ctx.state.user._id
-  await CommentSchema.findOneAndRemove({ _id, [AUTHOR_ID]: authorId})
+  return await CommentSchema.findOneAndRemove({ _id, [AUTHOR_ID]: authorId})
 }

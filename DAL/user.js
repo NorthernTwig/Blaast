@@ -47,5 +47,4 @@ export const remove = async _id => {
     await postsByUser.forEach(async (post) => {
       await CommentSchema.remove({ post: post._id })
     })
-
 }

@@ -28,7 +28,7 @@ router
     const { _id } = ctx.params
 
     try {
-      const commentInfo = await comments.getOne(_id)
+      const commentInfo = await comment.getOne(_id)
       ctx.body = generateSelf(commentInfo, ctx)
     } catch(e) {
       ctx.throw('Could not find a comment with that id', 404)
@@ -42,8 +42,9 @@ router
     try {
       const comments = await comment.getUsersComments(limit, offset, _id)
       const commentsWithSelf = comments.map(comment => generateSelf(comment, ctx))
-      ctx.body = pagination(commentsWithSelf, limit, offset)
+      ctx.body = pagination(commentsWithSelf, ctx, limit, offset)
     } catch(e) {
+      console.log(e)
       ctx.throw('Could not find comments by user with that id', 404)
     }
 
@@ -77,7 +78,7 @@ router
       ctx.throw('Could not create comment on post with that Id', 400)
     }
   })
-  .patch('/comments/:_id', jwt, async (ctx, next) => {
+  .patch('/comments/:_id', jwt, checkComment, async (ctx, next) => {
     try {
       const updatedComment = await comment.update(ctx)
 
@@ -87,6 +88,7 @@ router
 
       ctx.status = 204
     } catch(e) {
+      console.log(e)
       ctx.throw('Could not update comment', e.status)
     }
   })
@@ -94,8 +96,8 @@ router
     try {
       const deletedComment = await comment.remove(ctx)
 
-      if (updatedComment === null) {
-        ctx.throw(403)
+      if (!deletedComment) {
+        ctx.throw(404)
       }
 
       ctx.status = 204

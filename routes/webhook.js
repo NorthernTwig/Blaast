@@ -44,7 +44,7 @@ router
         self: mainSelf(ctx)
       }
     } catch(e) {
-      ctx.throw('Could not register webhook', 400)
+      ctx.throw('Could not register webhook', e.status)
     }
   })
   .patch('webhooks/:_id', jwt, async (ctx, next) => {
