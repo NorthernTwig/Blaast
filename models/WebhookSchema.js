@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 const Schema = mongoose.Schema
 
-export default mongoose.model('WebhookSchema', mongoose.Schema({
+export default mongoose.model('WebhookSchema', new mongoose.Schema({
   ownerId: {
     type: Schema.Types.ObjectId,
     ref: 'UserSchema',

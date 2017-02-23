@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 const Schema = mongoose.Schema
 
-export default mongoose.model('PostSchema', mongoose.Schema({
+export default mongoose.model('PostSchema', new mongoose.Schema({
   title: {
     type: String,
     required: true

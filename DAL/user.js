@@ -22,7 +22,7 @@ export const getOne = async _id => {
 export const create = async body => {
   const { password, username, name } = body
 
-   return await new UserSchema({
+  return await new UserSchema({
     password,
     username,
     name
