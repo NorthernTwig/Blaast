@@ -44,7 +44,6 @@ router
       const commentsWithSelf = comments.map(comment => generateSelf(comment, ctx))
       ctx.body = pagination(commentsWithSelf, ctx, limit, offset)
     } catch(e) {
-      console.log(e)
       ctx.throw('Could not find comments by user with that id', 404)
     }
 
@@ -88,7 +87,6 @@ router
 
       ctx.status = 204
     } catch(e) {
-      console.log(e)
       ctx.throw('Could not update comment', e.status)
     }
   })

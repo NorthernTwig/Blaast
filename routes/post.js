@@ -43,14 +43,10 @@ router
 
     try {
       const posts = await post.getUsersPost(_id, limit, offset)
-      
-      if (posts.length <= 0) {
-        ctx.throw(404)
-      }
-
       const postsWithSelf = posts.map(post => generateSelf(post, ctx))
       ctx.body = pagination(postsWithSelf, ctx, limit, offset)
     } catch(e) {
+      e.status = e.name === 'CastError' ? 404 : 500
       ctx.throw('Could not find posts by user with that id', e.status)
     }
   })

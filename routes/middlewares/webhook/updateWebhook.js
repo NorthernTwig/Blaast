@@ -6,7 +6,7 @@ export default async (ctx, next) => {
     ctx.throw('The parameter _id is missing', 422)
   }
 
-  if (endpoint === undefined && scope === undefined) {
+  if (endpoint === undefined && scope === undefined && secret === undefined) {
     ctx.data = {
       endpoint: 'ex. http://someroute.com', 
       scope: 'push comments posts users (seperate scopes with space)',

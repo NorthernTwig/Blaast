@@ -23,7 +23,7 @@ export const getUsersPost = async (_id, limit, offset) => {
     .skip(offset * limit)
 }
 
-export const create = async (ctx) => {
+export const create = async ctx => {
   const { title, body } = ctx.request.body
   const { name, _id } = ctx.state.user
   const user = await UserSchema.findOne({ _id })
@@ -42,7 +42,7 @@ export const create = async (ctx) => {
   }).save()
 }
 
-export const update = async (ctx) => {
+export const update = async ctx => {
   const { _id } = ctx.params
   const authorId = ctx.state.user._id
   const user = await UserSchema.findOne({ _id: authorId })
@@ -54,7 +54,7 @@ export const update = async (ctx) => {
   return await PostSchema.findOneAndUpdate({ _id, [AUTHOR_ID]: authorId }, ctx.request.body)
 }
 
-export const remove = async (ctx) => {
+export const remove = async ctx => {
   const { _id } = ctx.params
   const authorId = ctx.state.user._id
   const user = await UserSchema.findOne({ _id: authorId })

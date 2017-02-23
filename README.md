@@ -3,23 +3,23 @@
 # What works
 
 #### Entry
-GET - / (works)
+GET - / (works) -
 
 #### User
-GET - /users (works)
-GET - /users/:id (works)
-POST - /users (works)
-PATCH - /users (works)
+GET - /users (works)  -
+GET - /users/:id (works) -
+POST - /users (works) -
+PATCH - /users (works) -
 DELETE - /users (works)
 
 #### Auth
-POST - /auth (works)
+POST - /auth (works) -
 
 #### Post
-GET - /posts (works)
-GET - /posts/:id (works)
-GET - /posts/users/:id (works)
-POST - /posts (works) (500?)
+GET - /posts (works) -
+GET - /posts/:id (works) -
+GET - /posts/users/:id (works) -
+POST - /posts (works)
 PATCH - /posts/:id (works)
 DELETE - /posts/:id (works)
 
@@ -36,7 +36,7 @@ DELETE - /comments/:id (works)
 GET - /webhooks (works)
 GET - /webhooks/:id (works)
 POST - /webhooks (works)
-PATCH - /webhooks/:id (works) (500?)
+PATCH - /webhooks/:id (works)
 DELETE - /webhooks/:id (works)
 
 #### Request Chains

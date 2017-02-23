@@ -2,6 +2,7 @@ import Router from 'koa-router'
 import WebhookSchema from '../models/WebhookSchema'
 import jwt from './middlewares/auth/jwt'
 import webhookCheck from './middlewares/webhook/checkWebhook'
+import updateWebhookCheck from './middlewares/webhook/updateWebhook'
 import { webhooks as generateSelf, main as mainSelf } from './libs/generateSelf'
 import pagination from './libs/pagination'
 import baseUrl from './libs/baseUrl'
@@ -47,7 +48,7 @@ router
       ctx.throw('Could not register webhook', e.status)
     }
   })
-  .patch('webhooks/:_id', jwt, async (ctx, next) => {
+  .patch('webhooks/:_id', updateWebhookCheck, jwt, async (ctx, next) => {
     const { scope } = ctx.request.body
     let body = ctx.request.body
 
@@ -64,7 +65,7 @@ router
         ctx.throw(403)
       }
 
-      ctx.body = 'Webhook successfully updated'
+      ctx.status = 204
     } catch(e) {
       ctx.throw('Could not update webhook with that id', e.status)
     }
