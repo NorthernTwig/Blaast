@@ -1,7 +1,7 @@
 # Examination 2
 
 # Answers to the questions
-
+[Here](https://github.com/1dv527/on222bx-examination-2/wiki/Q---A)
 
 # How to get it up and running
 * The script will create a .env, and also runs 'npm install'
