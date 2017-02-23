@@ -44,7 +44,7 @@ router
       const newUser = await user.create(ctx.request.body)
 
       ctx.status = 201
-      ctx.set('Location', `${ baseUrl }/users/${newUser._id}` )
+      ctx.set('Location', `${ baseUrl }/users/${ newUser._id }` )
       ctx.body = {
         status: ctx.status,
         location: ctx.response.header.location,
@@ -53,7 +53,7 @@ router
       emitter.emit('user', { username, name })
     } catch(e) {
       if (e.code === 11000) {
-        ctx.throw('Username is already taken', 400)
+        ctx.throw('Username is already taken', 409)
       }
       ctx.throw('Could not create a user with those credentials', e.status)
     }
@@ -66,7 +66,7 @@ router
       ctx.status = 204
     } catch(e) {
       if (e.code === 11000) {
-        ctx.throw('Username is already taken', 400)
+        ctx.throw('Username is already taken', 409)
       }
       ctx.throw('Could not update user', e.status)
     }

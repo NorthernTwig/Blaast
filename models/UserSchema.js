@@ -1,10 +1,11 @@
 import mongoose from 'mongoose'
 import { hash } from 'bcrypt-as-promised'
 
-export default mongoose.model('UserSchema', new mongoose.Schema({
+export default mongoose.model('UserSchema', mongoose.Schema({
   username: {
     type: String,
     required: true,
+    index: true,
     unique: true
   },
   password: {

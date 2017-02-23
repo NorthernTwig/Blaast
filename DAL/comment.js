@@ -4,29 +4,29 @@ import CommentSchema from '../models/CommentSchema'
 
 const AUTHOR_ID = 'author._id'
 const DELETED_NAME = '[ DELETED ]'
-const USER_DATA = '_id body author post date'
+const COMMENT_DATA = '_id body author post date'
 const SALT_ROUNDS = 10
 
 export const getAll = async (limit, offset) => {
-  return await CommentSchema.find({}, USER_DATA, { lean: true })
+  return await CommentSchema.find({}, COMMENT_DATA, { lean: true })
     .sort({ 'date': -1 })
     .limit(limit)
     .skip(offset * limit)
 }
 
 export const getOne = async _id => {
-  return await CommentSchema.findOne({ _id }, USER_DATA, { lean: true })
+  return await CommentSchema.findOne({ _id }, COMMENT_DATA, { lean: true })
 }
 
 export const getUsersComments = async (limit, offset, _id) => {
-  return await CommentSchema.find({ [AUTHOR_ID]: _id  }, USER_DATA, { lean: true })
+  return await CommentSchema.find({ [AUTHOR_ID]: _id  }, COMMENT_DATA, { lean: true })
     .sort({ 'date': -1 })
     .limit(limit)
     .skip(offset * limit)
 }
 
 export const getPostsComments = async (limit, offset, _id) => {
-  return await CommentSchema.find({ 'post': _id  }, USER_DATA, { lean: true })
+  return await CommentSchema.find({ 'post': _id  }, COMMENT_DATA, { lean: true })
     .sort({ 'date': -1 })
     .limit(limit)
     .skip(offset * limit)

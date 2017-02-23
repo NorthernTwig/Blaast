@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 const Schema = mongoose.Schema
 
-export default mongoose.model('CommentSchema', new mongoose.Schema({
+export default mongoose.model('CommentSchema', mongoose.Schema({
   body: {
     type: String,
     required: true
