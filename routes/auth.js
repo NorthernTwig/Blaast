@@ -19,7 +19,7 @@ router
       const correctPassword = await compare(password, user.password)
       ctx.status = 200
       ctx.body = {
-        token: jwt.sign({ name: username, _id: user._id }, process.env.PUBLIC_SECRET),
+        token: jwt.sign({ name: username, _id: user._id }, process.env.PUBLIC_SECRET, { expiresIn: '10 days' }),
         message: 'Logged in',
         self: mainSelf(ctx)
       }
