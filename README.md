@@ -3,9 +3,8 @@
 # Answers to the questions
 [Here](https://github.com/1dv527/on222bx-examination-2/wiki/Q---A)
 
-# How to get it up and running
-* The script will create a .env, and also runs 'npm install'
-* run "npm start"
+# Live
+[here](https://api.oscarnordquist.se/)
 
 # What works
 
