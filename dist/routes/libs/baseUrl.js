@@ -3,4 +3,4 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = 'http://oscarnordquist.se';
+exports.default = 'https://api.oscarnordquist.se';
