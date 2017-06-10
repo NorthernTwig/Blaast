@@ -1,18 +1,15 @@
 {
-  "name": "super-mega-blog-tool",
+  "name": "Blaast",
   "version": "1.0.0",
-  "description": "A REST API that should be used for blogging purposes.",
-  "main": "index.js",
+  "description": "Blog as a Service",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon lib/index.js --exec babel-node",
     "build": "babel lib -d dist",
     "serve": "node dist/index.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/1dv527/on222bx-examination-2.git"
-  },
+  "repository": "https://github.com/NorthernTwig/Blaast.git",
   "keywords": [
     "blog",
     "api",
