@@ -1,10 +1,8 @@
-# Examination 2
+# BLAAST
+#### Blog as a Service
 
-# Answers to the questions
-[Here](https://github.com/1dv527/on222bx-examination-2/wiki/Q---A)
-
-# Live
-[here](https://api.oscarnordquist.se/)
+#### Why the T?
+Because a Blaast without the 'T' is just a Blaas, and that does not make sense.
 
 # What works
 
