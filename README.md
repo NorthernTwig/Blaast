@@ -1,5 +1,4 @@
-# BLAAST
-#### Blog as a Service
+# BLAAST - Blog as a Service
 
 #### Why the T?
 Because a Blaast without the 'T' is just a Blaas, and that does not make sense.
