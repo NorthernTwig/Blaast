@@ -19,10 +19,6 @@
   ],
   "author": "Oscar Nordquist",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/1dv527/on222bx-examination-2/issues"
-  },
-  "homepage": "https://github.com/1dv527/on222bx-examination-2#readme",
   "dependencies": {
     "bcrypt-as-promised": "^1.1.0",
     "bcrypt-nodejs": "0.0.3",
